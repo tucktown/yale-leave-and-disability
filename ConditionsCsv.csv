@@ -1,0 +1,14 @@
+Name,Logic,Description
+C6,PAY_END_DATE <= STD_APPROVED_THROUGH,STD is active
+C7,"OR(STD_APPROVED_THROUGH IS NULL, PAY_START_DATE > STD_APPROVED_THROUGH)",STD is not approved or has expired
+C8,(STD_OR_NOT / PAY_RATE) > 0 ,"Determines if STD hours can be applied according to actual or estimated CT PL payments. If > 0, then STD can be applied."
+C9,"OR(PAY_START_DATE >= CTPL_START, CTPL_START IS NULL)",CT PL is active in current week (Start)
+C10,"OR(PAY_END_DATE <= CTPL_END, CTPL_END IS NULL)",CT PL is active in current week (End)
+C11,"OR(CTPL_FORM IS NULL, PAY_START_DATE > CTPL_END)",CT PL not submitted or has expired
+C12,EE_PTO_SUPP,Employee indicated they would like to supplement leave with PTO
+C13,(SCHED_HRS * 0.4) <= PTO_USABLE,40% of PTO hours are less than or equal to usable PTO balance. PTO can be used to supplement leave.
+C14,PTO_USE_HOURS > 0,"PTO hours that are usable in combination with CT PL. If greater than 0, PTO will be used. If not, no PTO will be used."
+C15,PTO_USABLE >0,"Calculates employee's available PTO vs. how much they want to keep for Return to Word. If PTO_USABLE is greater than 0, PTO can be applied to supplement leave."
+C16,"AND(PAY_END_DATE <= FMLA_APPR_DATE, FLMA_APPR_DATE IS NOT NULL)",FMLA is approved and active
+C17,"AND(OR(FMLA_APPR_DATE IS NULL, PAY_START_DATE > FMLA_APPR_DATE), OR(CTPL_FORM IS NULL, PAY_START_DATE > CTPL_END)",FMLA and CT PL are inactive or expired
+C18,"AND(CTPL_APPROVED_AMOUNT IS NULL, FMLA_APPR_DATE IS NULL, STD_APPROVED_THROUGH IS NULL)","STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect"

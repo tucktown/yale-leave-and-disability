@@ -1,0 +1,79 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\ESLFeeder.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\ESLFeeder.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\ESLFeeder.csproj",
+        "projectName": "ESLFeeder",
+        "projectPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\ESLFeeder.csproj",
+        "packagesPath": "C:\\Users\\tucke\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\tucke\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Console": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "System.Data.Common": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.410\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
