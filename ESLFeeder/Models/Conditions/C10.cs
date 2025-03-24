@@ -13,12 +13,12 @@ namespace ESLFeeder.Models.Conditions
 
         public bool Evaluate(DataRow row, LeaveVariables variables)
         {
-            // If CTPL_END is null, CT PL is not active
-            if (row == null || row["CTPL_END"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_END"]?.ToString()))
+            // If CTPL_END_DATE is null, CT PL is not active
+            if (row == null || row["CTPL_END_DATE"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_END_DATE"]?.ToString()))
                 return true;
 
             var payEndDate = Convert.ToDateTime(row["PAY_END_DATE"]);
-            var ctplEndDate = Convert.ToDateTime(row["CTPL_END"]);
+            var ctplEndDate = Convert.ToDateTime(row["CTPL_END_DATE"]);
 
             // Return true if pay end date is before or equal to CTPL end date, or if CTPL end is null
             return payEndDate <= ctplEndDate;
@@ -27,8 +27,8 @@ namespace ESLFeeder.Models.Conditions
         public bool Evaluate(Dictionary<string, object> data, LeaveVariables variables)
         {
             // If CTPL_END is null, CT PL is not active
-            if (data == null || !data.ContainsKey("CTPL_END") || 
-                data["CTPL_END"] == null || string.IsNullOrEmpty(data["CTPL_END"]?.ToString()))
+            if (data == null || !data.ContainsKey("CTPL_END_DATE") || 
+                data["CTPL_END_DATE"] == null || string.IsNullOrEmpty(data["CTPL_END_DATE"]?.ToString()))
                 return true;
 
             // Check for PAY_END_DATE
@@ -36,7 +36,7 @@ namespace ESLFeeder.Models.Conditions
                 return false;
 
             var payEndDate = Convert.ToDateTime(data["PAY_END_DATE"]);
-            var ctplEndDate = Convert.ToDateTime(data["CTPL_END"]);
+            var ctplEndDate = Convert.ToDateTime(data["CTPL_END_DATE"]);
 
             // Return true if pay end date is before or equal to CTPL end date
             return payEndDate <= ctplEndDate;

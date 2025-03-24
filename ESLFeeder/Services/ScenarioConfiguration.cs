@@ -88,6 +88,16 @@ namespace ESLFeeder.Services
             LoadConfiguration();
         }
 
+        public List<string> GetValidReasonCodes()
+        {
+            return _configData?.Metadata?.ValidReasonCodes?.ToList() ?? new List<string>();
+        }
+        
+        public List<LeaveScenario> GetScenarios()
+        {
+            return _configData?.Scenarios?.ToList() ?? new List<LeaveScenario>();
+        }
+
         private void LoadConfiguration()
         {
             try

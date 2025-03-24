@@ -18,11 +18,11 @@ namespace ESLFeeder.Models.Conditions
                 return true;
 
             // Or if the pay start date is after CT PL end date (expired)
-            if (row["CTPL_END"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_END"]?.ToString()))
+            if (row["CTPL_END_DATE"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_END_DATE"]?.ToString()))
                 return false;
 
             var payStartDate = Convert.ToDateTime(row["PAY_START_DATE"]);
-            var ctplEndDate = Convert.ToDateTime(row["CTPL_END"]);
+            var ctplEndDate = Convert.ToDateTime(row["CTPL_END_DATE"]);
 
             return payStartDate > ctplEndDate;
         }
@@ -35,7 +35,7 @@ namespace ESLFeeder.Models.Conditions
                 return true;
 
             // Check if CTPL_END exists
-            if (!data.ContainsKey("CTPL_END") || data["CTPL_END"] == null || string.IsNullOrEmpty(data["CTPL_END"]?.ToString()))
+            if (!data.ContainsKey("CTPL_END_DATE") || data["CTPL_END_DATE"] == null || string.IsNullOrEmpty(data["CTPL_END_DATE"]?.ToString()))
                 return false;
 
             // Check if PAY_START_DATE exists
@@ -44,7 +44,7 @@ namespace ESLFeeder.Models.Conditions
 
             // Or if the pay start date is after CT PL end date (expired)
             var payStartDate = Convert.ToDateTime(data["PAY_START_DATE"]);
-            var ctplEndDate = Convert.ToDateTime(data["CTPL_END"]);
+            var ctplEndDate = Convert.ToDateTime(data["CTPL_END_DATE"]);
 
             return payStartDate > ctplEndDate;
         }

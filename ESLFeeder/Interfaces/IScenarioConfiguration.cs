@@ -32,6 +32,24 @@ namespace ESLFeeder.Interfaces
         /// </summary>
         void ReloadConfigurations();
 
+        /// <summary>
+        /// Get all scenarios for a specific reason code and process level
+        /// </summary>
+        /// <param name="reasonCode">The reason code to filter by</param>
+        /// <param name="processLevel">The process level to filter by</param>
+        /// <returns>A list of scenarios matching the reason code and process level</returns>
         List<LeaveScenario> GetScenariosForReasonCode(string reasonCode, int processLevel);
+        
+        /// <summary>
+        /// Gets all valid reason codes from the configuration
+        /// </summary>
+        /// <returns>A list of valid reason codes</returns>
+        List<string> GetValidReasonCodes();
+        
+        /// <summary>
+        /// Gets all scenarios
+        /// </summary>
+        /// <returns>A list of all scenarios</returns>
+        List<LeaveScenario> GetScenarios();
     }
 } 

@@ -131,29 +131,110 @@ namespace ESLFeeder.Services
         /// </summary>
         private double GetVariableValue(string variableName, LeaveVariables variables)
         {
-            // This dictionary-based approach is more type-safe than reflection
-            switch (variableName)
+            if (variables == null || string.IsNullOrEmpty(variableName))
             {
-                case nameof(variables.ScheduledHours): return variables.ScheduledHours;
-                case nameof(variables.PayRate): return variables.PayRate;
-                case nameof(variables.WeeklyWage): return variables.WeeklyWage;
-                case nameof(variables.CTPLApprovedAmount): return variables.CTPLApprovedAmount;
-                case nameof(variables.StdOrNot): return variables.StdOrNot;
-                case nameof(variables.CtplPayment): return variables.CtplPayment;
-                case nameof(variables.PtoSuppDollars): return variables.PtoSuppDollars;
-                case nameof(variables.PtoSuppHrs): return variables.PtoSuppHrs;
-                case nameof(variables.PtoReserve): return variables.PtoReserve;
-                case nameof(variables.PtoAvailCalc): return variables.PtoAvailCalc;
-                case nameof(variables.PtoUsable): return variables.PtoUsable;
-                case nameof(variables.PtoUseHrs): return variables.PtoUseHrs;
-                case nameof(variables.BasicSickAvailCalc): return variables.BasicSickAvailCalc;
-                case nameof(variables.MinWage40): return variables.MinWage40;
-                case nameof(variables.NinetyFiveCTMin40): return variables.NinetyFiveCTMin40;
-                case nameof(variables.CtplCalcStar): return variables.CtplCalcStar;
-                case nameof(variables.CtplCalc): return variables.CtplCalc;
-                case nameof(variables.WeekOfPP): return variables.WeekOfPP;
+                return 0.0;
+            }
+
+            // Add mappings for variable names to their property getters
+            switch (variableName.ToLower())
+            {
+                case "basicpay":
+                    return variables.BasicPay;
+                case "pto_available":
+                case "ptoavail":
+                    return variables.PtoAvail;
+                case "pto_last1week":
+                case "ptolast1week":
+                    return variables.PtoHrsLast1Week;
+                case "pto_last2week":
+                case "ptolast2week":
+                    return variables.PtoHrsLast2Week;
+                case "basicsick_available":
+                    return variables.BasicSickAvail;
+                case "basicsick_last1week":
+                    return variables.BasicSickLast1Week;
+                case "basicsick_last2week":
+                    return variables.BasicSickLast2Week;
+                case "hours_per_week":
+                    return variables.HoursPerWeek;
+                case "employee_status":
+                    // Convert status string to numeric value (e.g., Active=1, LOA=2, etc.)
+                    return ConvertStatusToNumeric(variables.EmployeeStatus);
                 default:
-                    _logger.LogWarning("Variable {VariableName} not found in LeaveVariables", variableName);
+                    _logger.LogWarning("Unknown variable name: {VariableName}", variableName);
+                    return 0.0;
+            }
+        }
+
+        public ProcessResult Calculate(LeaveScenario scenario, LeaveVariables variables)
+        {
+            if (scenario == null)
+            {
+                _logger.LogWarning("Null scenario provided for calculation");
+                return new ProcessResult { Success = false, ErrorMessage = "Invalid scenario" };
+            }
+
+            if (variables == null)
+            {
+                _logger.LogWarning("Null variables provided for calculation");
+                return new ProcessResult { Success = false, ErrorMessage = "Invalid variables" };
+            }
+
+            var result = new ProcessResult { Success = true };
+            
+            try
+            {
+                _logger.LogInformation("Calculating scenario {ScenarioId}: {ScenarioName}", scenario.Id, scenario.Name);
+                
+                // Set scenario information on the result
+                result.ScenarioId = scenario.Id;
+                result.ScenarioName = scenario.Name;
+                
+                // Process each output field in the scenario's Updates
+                foreach (var outputEntry in scenario.Outputs)
+                {
+                    string outputId = outputEntry.Key;
+                    ScenarioOutput output = outputEntry.Value;
+                    
+                    // If this is a calculated output
+                    if (output.Type == ScenarioOutput.OutputType.Number && output is ScenarioOutput numberOutput)
+                    {
+                        double outputValue = numberOutput.NumberValue;
+                        _logger.LogInformation("Using output {OutputId}: {OutputValue}", outputId, outputValue);
+                        
+                        // Add the output to the result
+                        result.AddOutputValue(outputId, outputValue);
+                    }
+                }
+                
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calculating scenario {ScenarioId}", scenario.Id);
+                return new ProcessResult { Success = false, ErrorMessage = $"Error calculating scenario: {ex.Message}" };
+            }
+        }
+
+        private double ConvertStatusToNumeric(string status)
+        {
+            if (string.IsNullOrEmpty(status))
+            {
+                return 0.0;
+            }
+
+            // Standard status values used in the system
+            switch (status.ToLowerInvariant().Trim())
+            {
+                case "active":
+                    return 1.0;
+                case "loa":
+                    return 2.0;
+                case "terminated":
+                    return 3.0;
+                default:
+                    _logger.LogWarning("Unknown employee status: {Status}", status);
                     return 0.0;
             }
         }

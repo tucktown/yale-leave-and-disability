@@ -103,7 +103,7 @@ namespace ESLFeeder.Services
                 result.ScenarioName = scenario.Name;
                 
                 // Add evaluated conditions to the result
-                if (variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                if (variables != null && variables.EvaluatedConditions != null && variables.EvaluatedConditions.ContainsKey(scenario.Id))
                 {
                     result.AddEvaluationDetail(scenario.Id, variables.EvaluatedConditions[scenario.Id]);
                 }
@@ -114,6 +114,61 @@ namespace ESLFeeder.Services
             {
                 _logger.LogError(ex, "Error processing leave request with variables object");
                 return new ProcessResult().WithError($"Error processing leave request: {ex.Message}");
+            }
+        }
+
+        public ProcessResult ProcessLeaveRequest(Dictionary<string, object> leaveData)
+        {
+            _logger.LogInformation("Processing leave request from dictionary");
+
+            var result = new ProcessResult();
+
+            try
+            {
+                if (leaveData == null)
+                {
+                    return result.WithError("Leave data dictionary cannot be null");
+                }
+
+                // Validate required fields
+                var requiredFields = new[] { "CLAIM_ID", "PAY_START_DATE", "PAY_END_DATE", "REASON_CODE" };
+                foreach (var field in requiredFields)
+                {
+                    if (!leaveData.ContainsKey(field) || string.IsNullOrEmpty(leaveData[field]?.ToString()))
+                    {
+                        return result.WithError($"Required field {field} is missing or empty");
+                    }
+                }
+
+                // Calculate variables
+                if (!_calculator.CalculateVariables(leaveData, out var variables))
+                {
+                    return result.WithError("Failed to calculate required variables");
+                }
+
+                // Set scenario identification properties
+                variables.ReasonCode = leaveData["REASON_CODE"].ToString().Trim();
+                
+                // Try to get the process level or GL company
+                if (leaveData.ContainsKey("PROCESS_LEVEL") && !string.IsNullOrEmpty(leaveData["PROCESS_LEVEL"]?.ToString()))
+                {
+                    variables.GlCompany = int.Parse(leaveData["PROCESS_LEVEL"].ToString().Trim());
+                }
+                else if (leaveData.ContainsKey("GLCOMPANY") && !string.IsNullOrEmpty(leaveData["GLCOMPANY"]?.ToString()))
+                {
+                    variables.GlCompany = int.Parse(leaveData["GLCOMPANY"].ToString().Trim());
+                }
+                else
+                {
+                    variables.GlCompany = 1; // Default value if not found
+                }
+
+                return ProcessLeaveRequest(variables);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing leave request from dictionary");
+                return result.WithError(ex);
             }
         }
 
@@ -150,10 +205,12 @@ namespace ESLFeeder.Services
                     return result.WithError("PAY_START_DATE cannot be after PAY_END_DATE");
                 }
 
-                // Validate input variables
-                if (!_calculator.ValidateInputVariables(leaveData, out string errorMessage))
+                // Validate reason code
+                var reasonCode = leaveData["REASON_CODE"].ToString().Trim();
+                var validReasonCodes = _scenarioConfiguration.GetValidReasonCodes();
+                if (!validReasonCodes.Contains(reasonCode, StringComparer.OrdinalIgnoreCase))
                 {
-                    return result.WithError(errorMessage);
+                    return result.WithError($"Invalid reason code: {reasonCode}. Valid codes: {string.Join(", ", validReasonCodes)}");
                 }
 
                 result.Success = true;
@@ -166,187 +223,106 @@ namespace ESLFeeder.Services
             }
         }
 
-        private List<LeaveScenario> GetApplicableScenarios(Dictionary<string, object> leaveData)
+        public ProcessResult ValidateLeaveRequest(Dictionary<string, object> leaveData)
         {
-            var reasonCode = leaveData.ContainsKey("REASON_CODE") ? leaveData["REASON_CODE"]?.ToString() : null;
-            var processLevel = leaveData.ContainsKey("PROCESS_LEVEL") ? leaveData["PROCESS_LEVEL"]?.ToString() : 
-                               leaveData.ContainsKey("GLCOMPANY") ? leaveData["GLCOMPANY"]?.ToString() : null;
-            
-            if (string.IsNullOrEmpty(reasonCode) || string.IsNullOrEmpty(processLevel))
+            var result = new ProcessResult();
+
+            try
             {
-                _logger.LogWarning("Missing required fields in leave data. REASON_CODE: {ReasonCode}, PROCESS_LEVEL: {ProcessLevel}",
-                    reasonCode, processLevel);
-                return new List<LeaveScenario>();
+                if (leaveData == null)
+                {
+                    return result.WithError("Leave request data cannot be null");
+                }
+
+                // Validate required fields
+                var requiredFields = new[] { "CLAIM_ID", "PAY_START_DATE", "PAY_END_DATE", "REASON_CODE" };
+                foreach (var field in requiredFields)
+                {
+                    if (!leaveData.ContainsKey(field) || string.IsNullOrEmpty(leaveData[field]?.ToString()))
+                    {
+                        return result.WithError($"Required field {field} is missing or empty");
+                    }
+                }
+
+                // Validate dates
+                if (!DateTime.TryParse(leaveData["PAY_START_DATE"].ToString(), out var startDate) ||
+                    !DateTime.TryParse(leaveData["PAY_END_DATE"].ToString(), out var endDate))
+                {
+                    return result.WithError("Invalid date format in PAY_START_DATE or PAY_END_DATE");
+                }
+
+                if (startDate > endDate)
+                {
+                    return result.WithError("PAY_START_DATE cannot be after PAY_END_DATE");
+                }
+
+                // Validate reason code
+                var reasonCode = leaveData["REASON_CODE"].ToString().Trim();
+                var validReasonCodes = _scenarioConfiguration.GetValidReasonCodes();
+                if (!validReasonCodes.Contains(reasonCode, StringComparer.OrdinalIgnoreCase))
+                {
+                    return result.WithError($"Invalid reason code: {reasonCode}. Valid codes: {string.Join(", ", validReasonCodes)}");
+                }
+
+                result.Success = true;
+                return result;
             }
-            
-            int processLevelInt;
-            if (!int.TryParse(processLevel, out processLevelInt))
+            catch (Exception ex)
             {
-                _logger.LogWarning("Invalid process level: {ProcessLevel}", processLevel);
-                processLevelInt = 1; // Default to 1 if invalid
+                _logger.LogError(ex, "Error validating leave request from dictionary");
+                return result.WithError($"Error validating leave request: {ex.Message}");
             }
-            
-            var applicableScenarios = _scenarioConfiguration.GetScenariosForReasonCode(reasonCode, processLevelInt);
-            
-            _logger.LogInformation("Found {Count} applicable scenarios for reason code {ReasonCode} and process level {ProcessLevel}",
-                applicableScenarios.Count, reasonCode, processLevelInt);
-            
-            return applicableScenarios;
         }
 
-        private bool EvaluateScenarioConditions(DataRow row, LeaveVariables variables, List<EvaluatedCondition> evaluatedConditions)
+        public IEnumerable<LeaveScenario> GetApplicableScenarios(DataRow row)
         {
-            bool allRequiredConditionsAreMet = true;
-            bool noExcludedConditionsAreTriggered = true;
-
-            foreach (var condition in evaluatedConditions)
+            if (row == null)
             {
-                bool isConditionTriggered = _conditionEvaluator.EvaluateCondition(
-                    _conditions.GetCondition(condition.ConditionId), 
-                    row, 
-                    variables);
+                _logger.LogWarning("Row data cannot be null");
+                return Enumerable.Empty<LeaveScenario>();
+            }
 
-                condition.Result = isConditionTriggered;
+            try
+            {
+                string reasonCode = row["REASON_CODE"].ToString().Trim();
+                int processLevelInt = 0;
+
+                if (row.Table.Columns.Contains("PROCESS_LEVEL"))
+                {
+                    processLevelInt = int.Parse(row["PROCESS_LEVEL"].ToString().Trim());
+                }
+                else if (row.Table.Columns.Contains("GLCOMPANY"))
+                {
+                    processLevelInt = int.Parse(row["GLCOMPANY"].ToString().Trim());
+                }
                 
-                // Store the evaluation result in the variables object for logging purposes
-                if (variables.EvaluatedConditions.ContainsKey(condition.ScenarioId))
+                if (processLevelInt == 0)
                 {
-                    variables.EvaluatedConditions[condition.ScenarioId][condition.ConditionId] = isConditionTriggered;
+                    _logger.LogWarning("Process level or GL Company not found in row data");
+                    return Enumerable.Empty<LeaveScenario>();
                 }
-                else
-                {
-                    variables.EvaluatedConditions[condition.ScenarioId] = new Dictionary<string, bool>
-                    {
-                        { condition.ConditionId, isConditionTriggered }
-                    };
-                }
-
-                if (condition.ConditionType == ConditionType.Required && !isConditionTriggered)
-                {
-                    _logger.LogDebug("Required condition {ConditionId} not met for scenario {ScenarioId}", 
-                        condition.ConditionId, condition.ScenarioId);
-                    allRequiredConditionsAreMet = false;
-                }
-                else if (condition.ConditionType == ConditionType.Excluded && isConditionTriggered)
-                {
-                    _logger.LogDebug("Excluded condition {ConditionId} triggered for scenario {ScenarioId}", 
-                        condition.ConditionId, condition.ScenarioId);
-                    noExcludedConditionsAreTriggered = false;
-                }
-            }
-
-            return allRequiredConditionsAreMet && noExcludedConditionsAreTriggered;
-        }
-
-        private bool EvaluateScenarioConditions(Dictionary<string, object> data, LeaveVariables variables, List<EvaluatedCondition> evaluatedConditions)
-        {
-            bool allRequiredConditionsAreMet = true;
-            bool noExcludedConditionsAreTriggered = true;
-
-            foreach (var condition in evaluatedConditions)
-            {
-                bool isConditionTriggered = _conditionEvaluator.EvaluateCondition(
-                    _conditions.GetCondition(condition.ConditionId), 
-                    data, 
-                    variables);
-
-                condition.Result = isConditionTriggered;
                 
-                // Store the evaluation result in the variables object for logging purposes
-                if (variables.EvaluatedConditions.ContainsKey(condition.ScenarioId))
-                {
-                    variables.EvaluatedConditions[condition.ScenarioId][condition.ConditionId] = isConditionTriggered;
-                }
-                else
-                {
-                    variables.EvaluatedConditions[condition.ScenarioId] = new Dictionary<string, bool>
-                    {
-                        { condition.ConditionId, isConditionTriggered }
-                    };
-                }
-
-                if (condition.ConditionType == ConditionType.Required && !isConditionTriggered)
-                {
-                    _logger.LogDebug("Required condition {ConditionId} not met for scenario {ScenarioId}", 
-                        condition.ConditionId, condition.ScenarioId);
-                    allRequiredConditionsAreMet = false;
-                }
-                else if (condition.ConditionType == ConditionType.Excluded && isConditionTriggered)
-                {
-                    _logger.LogDebug("Excluded condition {ConditionId} triggered for scenario {ScenarioId}", 
-                        condition.ConditionId, condition.ScenarioId);
-                    noExcludedConditionsAreTriggered = false;
-                }
+                // Get all scenarios from the configuration
+                var allScenarios = _scenarioConfiguration.GetScenarios();
+                
+                // Filter to relevant scenarios
+                var scenarios = allScenarios
+                    .Where(s => s.ReasonCode.Trim().Equals(reasonCode, StringComparison.OrdinalIgnoreCase) && 
+                                s.ProcessLevel == processLevelInt &&
+                                s.IsActive)
+                    .OrderBy(s => s.Id)
+                    .ToList();
+                
+                _logger.LogInformation("Found {Count} scenarios for reason code {ReasonCode} and process level {ProcessLevel}",
+                    scenarios.Count, reasonCode, processLevelInt);
+                
+                return scenarios;
             }
-
-            return allRequiredConditionsAreMet && noExcludedConditionsAreTriggered;
-        }
-
-        private Dictionary<string, object> CalculateUpdates(LeaveScenario scenario, LeaveVariables variables)
-        {
-            var updates = new Dictionary<string, object>();
-            var variableDict = new Dictionary<string, double>();
-
-            // Convert LeaveVariables to dictionary
-            foreach (var prop in typeof(LeaveVariables).GetProperties())
+            catch (Exception ex)
             {
-                if (prop.GetValue(variables) is double value)
-                {
-                    variableDict[prop.Name] = value;
-                }
+                _logger.LogError(ex, "Error retrieving applicable scenarios");
+                return Enumerable.Empty<LeaveScenario>();
             }
-
-            foreach (var kvp in scenario.Outputs)
-            {
-                var fieldName = kvp.Key;
-                var output = kvp.Value;
-
-                try
-                {
-                    if (output.Type == ScenarioOutput.OutputType.Number)
-                    {
-                        var value = output.Calculate(variableDict);
-                        updates[fieldName] = value;
-                    }
-                    else if (output.Type == ScenarioOutput.OutputType.Boolean)
-                    {
-                        var value = output.Calculate(variableDict);
-                        // Convert the boolean value directly
-                        updates[fieldName] = output.BooleanValue;
-                    }
-                    else if (output.Type == ScenarioOutput.OutputType.String)
-                    {
-                        if (fieldName == "AUTH_BY")
-                        {
-                            updates[fieldName] = "ESL";
-                        }
-                        else if (fieldName == "CHECK_KRONOS")
-                        {
-                            updates[fieldName] = "Y";
-                        }
-                        else if (fieldName == "ENTRY_DATE")
-                        {
-                            updates[fieldName] = DateTime.Now;
-                        }
-                        else if (fieldName == "EXEC_NOTE" || fieldName == "PHYS_NOTE")
-                        {
-                            updates[fieldName] = null;
-                        }
-                        else
-                        {
-                            updates[fieldName] = output.StringValue;
-                        }
-                    }
-                    _logger.LogInformation($"Calculated {fieldName} = {updates[fieldName]}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Error calculating output {fieldName}");
-                    throw;
-                }
-            }
-
-            return updates;
         }
 
         public LeaveScenario FindMatchingScenario(LeaveVariables variables)
@@ -421,7 +397,7 @@ namespace ESLFeeder.Services
                     // Store required condition results
                     if (requiredConditionResults.Count > 0)
                     {
-                        if (!variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                        if (variables != null && variables.EvaluatedConditions != null && !variables.EvaluatedConditions.ContainsKey(scenario.Id))
                         {
                             variables.EvaluatedConditions[scenario.Id] = new Dictionary<string, bool>();
                         }
@@ -474,7 +450,7 @@ namespace ESLFeeder.Services
                     // Store excluded condition results
                     if (excludedConditionResults.Count > 0)
                     {
-                        if (!variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                        if (variables != null && variables.EvaluatedConditions != null && !variables.EvaluatedConditions.ContainsKey(scenario.Id))
                         {
                             variables.EvaluatedConditions[scenario.Id] = new Dictionary<string, bool>();
                         }
@@ -507,132 +483,59 @@ namespace ESLFeeder.Services
             }
         }
 
-        public ProcessResult ProcessLeaveRequest(Dictionary<string, object> leaveData)
+        public IEnumerable<LeaveScenario> GetApplicableScenarios(Dictionary<string, object> data)
         {
-            if (leaveData == null)
+            if (data == null)
             {
-                return new ProcessResult().WithError("LeaveData cannot be null");
-            }
-
-            try
-            {
-                // Convert the dictionary to a DataRow for compatibility with existing code
-                var dt = new DataTable();
-                foreach (var key in leaveData.Keys)
-                {
-                    dt.Columns.Add(key);
-                }
-                
-                var dataRow = dt.NewRow();
-                foreach (var kvp in leaveData)
-                {
-                    dataRow[kvp.Key] = kvp.Value ?? DBNull.Value;
-                }
-
-                // Use the existing ProcessLeaveRequest method
-                return ProcessLeaveRequest(dataRow);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing leave request with dictionary data");
-                return new ProcessResult().WithError($"Error processing leave request: {ex.Message}");
-            }
-        }
-
-        public ProcessResult ValidateLeaveRequest(Dictionary<string, object> leaveData)
-        {
-            if (leaveData == null)
-            {
-                return new ProcessResult().WithError("LeaveData cannot be null");
-            }
-
-            try
-            {
-                // Convert the dictionary to a DataRow for compatibility with existing code
-                var dt = new DataTable();
-                foreach (var key in leaveData.Keys)
-                {
-                    dt.Columns.Add(key);
-                }
-                
-                var dataRow = dt.NewRow();
-                foreach (var kvp in leaveData)
-                {
-                    dataRow[kvp.Key] = kvp.Value ?? DBNull.Value;
-                }
-
-                // Use the existing ValidateLeaveRequest method
-                return ValidateLeaveRequest(dataRow);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error validating leave request with dictionary data");
-                return new ProcessResult().WithError($"Error validating leave request: {ex.Message}");
-            }
-        }
-
-        public IEnumerable<LeaveScenario> GetApplicableScenarios(DataRow leaveData)
-        {
-            if (leaveData == null)
-            {
+                _logger.LogWarning("Dictionary data cannot be null");
                 return Enumerable.Empty<LeaveScenario>();
             }
 
             try
             {
-                // Extract reason code and process level from the DataRow
-                string reasonCode = leaveData.Table.Columns.Contains("REASON_CODE") ? 
-                    leaveData["REASON_CODE"]?.ToString()?.Trim() : string.Empty;
-                
-                int processLevel = 1;
-                if (leaveData.Table.Columns.Contains("PROCESS_LEVEL"))
+                if (!data.ContainsKey("REASON_CODE") || string.IsNullOrEmpty(data["REASON_CODE"]?.ToString()))
                 {
-                    int.TryParse(leaveData["PROCESS_LEVEL"]?.ToString(), out processLevel);
-                }
-                else if (leaveData.Table.Columns.Contains("GLCOMPANY"))
-                {
-                    int.TryParse(leaveData["GLCOMPANY"]?.ToString(), out processLevel);
+                    _logger.LogWarning("Reason code not found in dictionary data");
+                    return Enumerable.Empty<LeaveScenario>();
                 }
 
-                // Get scenarios by reason code and process level
-                return _scenarioConfiguration.GetScenariosForReasonCode(reasonCode, processLevel);
+                string reasonCode = data["REASON_CODE"].ToString().Trim();
+                int processLevelInt = 0;
+
+                if (data.ContainsKey("PROCESS_LEVEL") && !string.IsNullOrEmpty(data["PROCESS_LEVEL"]?.ToString()))
+                {
+                    processLevelInt = int.Parse(data["PROCESS_LEVEL"].ToString().Trim());
+                }
+                else if (data.ContainsKey("GLCOMPANY") && !string.IsNullOrEmpty(data["GLCOMPANY"]?.ToString()))
+                {
+                    processLevelInt = int.Parse(data["GLCOMPANY"].ToString().Trim());
+                }
+                
+                if (processLevelInt == 0)
+                {
+                    _logger.LogWarning("Process level or GL Company not found in dictionary data");
+                    return Enumerable.Empty<LeaveScenario>();
+                }
+                
+                // Get all scenarios from the configuration
+                var allScenarios = _scenarioConfiguration.GetScenarios();
+                
+                // Filter to relevant scenarios
+                var scenarios = allScenarios
+                    .Where(s => s.ReasonCode.Trim().Equals(reasonCode, StringComparison.OrdinalIgnoreCase) && 
+                                s.ProcessLevel == processLevelInt &&
+                                s.IsActive)
+                    .OrderBy(s => s.Id)
+                    .ToList();
+                
+                _logger.LogInformation("Found {Count} scenarios for reason code {ReasonCode} and process level {ProcessLevel}",
+                    scenarios.Count, reasonCode, processLevelInt);
+                
+                return scenarios;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting applicable scenarios from DataRow");
-                return Enumerable.Empty<LeaveScenario>();
-            }
-        }
-
-        public IEnumerable<LeaveScenario> GetApplicableScenarios(Dictionary<string, object> leaveData)
-        {
-            if (leaveData == null)
-            {
-                return Enumerable.Empty<LeaveScenario>();
-            }
-
-            try
-            {
-                // Extract reason code and process level from the dictionary
-                string reasonCode = leaveData.ContainsKey("REASON_CODE") ? 
-                    leaveData["REASON_CODE"]?.ToString()?.Trim() : string.Empty;
-                
-                int processLevel = 1;
-                if (leaveData.ContainsKey("PROCESS_LEVEL"))
-                {
-                    int.TryParse(leaveData["PROCESS_LEVEL"]?.ToString(), out processLevel);
-                }
-                else if (leaveData.ContainsKey("GLCOMPANY"))
-                {
-                    int.TryParse(leaveData["GLCOMPANY"]?.ToString(), out processLevel);
-                }
-
-                // Get scenarios by reason code and process level
-                return _scenarioConfiguration.GetScenariosForReasonCode(reasonCode, processLevel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting applicable scenarios with dictionary data");
+                _logger.LogError(ex, "Error retrieving applicable scenarios");
                 return Enumerable.Empty<LeaveScenario>();
             }
         }

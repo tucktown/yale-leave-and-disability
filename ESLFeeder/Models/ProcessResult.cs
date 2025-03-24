@@ -20,6 +20,15 @@ namespace ESLFeeder.Models
         public string Message { get; set; } = string.Empty;
         
         /// <summary>
+        /// Error message when processing fails
+        /// </summary>
+        public string ErrorMessage 
+        { 
+            get => Message; 
+            set => Message = value; 
+        }
+        
+        /// <summary>
         /// The ID of the selected scenario, if any
         /// </summary>
         public int? ScenarioId { get; set; }
@@ -78,6 +87,15 @@ namespace ESLFeeder.Models
         }
         
         /// <summary>
+        /// Adds a numeric output value to the result
+        /// </summary>
+        public ProcessResult AddOutputValue(string key, double value)
+        {
+            Outputs[key] = ScenarioOutput.FromNumber(value);
+            return this;
+        }
+        
+        /// <summary>
         /// Adds evaluation details for a scenario
         /// </summary>
         public ProcessResult AddEvaluationDetail(int scenarioId, Dictionary<string, bool> conditions)
@@ -101,6 +119,7 @@ namespace ESLFeeder.Models
         {
             Success = false;
             Message = message;
+            ErrorMessage = message;
             return this;
         }
 
@@ -117,6 +136,21 @@ namespace ESLFeeder.Models
             ScenarioId = scenario.Id;
             ScenarioName = scenario.Name;
             Updates = updates;
+            return this;
+        }
+        
+        public ProcessResult WithNoScenarioFound(LeaveVariables variables)
+        {
+            Success = false;
+            Message = "No matching scenario found for the given variables";
+            return this;
+        }
+        
+        public ProcessResult WithError(Exception ex)
+        {
+            Success = false;
+            Message = ex.Message;
+            ErrorMessage = ex.Message;
             return this;
         }
     }

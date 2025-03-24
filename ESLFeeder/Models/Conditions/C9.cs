@@ -14,12 +14,12 @@ namespace ESLFeeder.Models.Conditions
         public bool Evaluate(DataRow row, LeaveVariables variables)
         {
             // If CTPL_START is null, CT PL is not active
-            if (row == null || row["CTPL_START"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_START"]?.ToString()))
+            if (row == null || row["CTPL_START_DATE"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_START_DATE"]?.ToString()))
                 return true;
 
             // Check if pay start date is on or after CTPL start date
             var payStartDate = Convert.ToDateTime(row["PAY_START_DATE"]);
-            var ctplStartDate = Convert.ToDateTime(row["CTPL_START"]);
+            var ctplStartDate = Convert.ToDateTime(row["CTPL_START_DATE"]);
 
             // Return true if pay start date is on or after CTPL start date, or if CTPL start is null
             return payStartDate >= ctplStartDate;
@@ -28,8 +28,8 @@ namespace ESLFeeder.Models.Conditions
         public bool Evaluate(Dictionary<string, object> data, LeaveVariables variables)
         {
             // If CTPL_START is null, CT PL is not active
-            if (data == null || !data.ContainsKey("CTPL_START") || 
-                data["CTPL_START"] == null || string.IsNullOrEmpty(data["CTPL_START"]?.ToString()))
+            if (data == null || !data.ContainsKey("CTPL_START_DATE") || 
+                data["CTPL_START_DATE"] == null || string.IsNullOrEmpty(data["CTPL_START_DATE"]?.ToString()))
                 return true;
 
             // Check for PAY_START_DATE
@@ -38,7 +38,7 @@ namespace ESLFeeder.Models.Conditions
 
             // Check if pay start date is on or after CTPL start date
             var payStartDate = Convert.ToDateTime(data["PAY_START_DATE"]);
-            var ctplStartDate = Convert.ToDateTime(data["CTPL_START"]);
+            var ctplStartDate = Convert.ToDateTime(data["CTPL_START_DATE"]);
 
             // Return true if pay start date is on or after CTPL start date
             return payStartDate >= ctplStartDate;
