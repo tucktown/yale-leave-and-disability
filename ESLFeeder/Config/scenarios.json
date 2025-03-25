@@ -791,7 +791,7 @@
       "variables_required": ["ScheduledHours"],
       "conditions": {
         "required": ["C6", "C9", "C10", "C12"],
-        "forbidden": ["C8", "C11", "C18"],
+        "forbidden": ["C8", "C11","C14", "C18"],
         "optional": []
       },
       "updates": {
@@ -1433,8 +1433,8 @@
       "reason_code": "PREGNANCY",
       "variables_required": ["StdOrNot", "PayRate", "PtoUseHrs"],
       "conditions": {
-        "required": ["C6", "C8", "C9", "C10", "C12"],
-        "forbidden": ["C11"],
+        "required": ["C6", "C8", "C9", "C10", "C12", "C14"],
+        "forbidden": ["C11", "C18"],
         "optional": []
       },
       "updates": {
@@ -2414,7 +2414,7 @@
       "variables_required": ["ScheduledHours"],
       "conditions": {
         "required": ["C7", "C11", "C15"],
-        "forbidden": ["C17"],
+        "forbidden": ["C17", "C18", "C19"],
         "optional": []
       },
       "updates": {
@@ -2617,6 +2617,327 @@
       "logging": {
         "add_message": "STD_HOURS: {variables.ScheduledHours}",
         "update_message": "STD_HOURS from {current.STD_HOURS} to {variables.ScheduledHours}"
+      }
+    },
+    {
+      "id": 25,
+      "name": "500: MEDICAL/SURGICAL - STD, CT PL, With PTO Supplement (PTO Only)",
+      "description": "If an employee is approved for STD, CT PL is active, would like to supplement with PTO, they will be paid using STD hours according to \"Legacy w-out CTPL Amount\" or \"Legacy with CT PL Amount\", supplemented with PTO up to the limits set by CT PL payments and PTO RTW balances. If STD_OR_NOT <= 0, then only PTO will be applied.",
+      "process_level": 500,
+      "reason_code": "MEDICAL/SURGICAL",
+      "variables_required": ["PtoUseHrs"],
+      "conditions": {
+        "required": ["C6", "C9", "C10", "C12", "C14"],
+        "forbidden": ["C8", "C11", "C19"],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "STD_HOURS",
+          "PTO_HRS",
+          "LOA_NO_HRS_PAID",
+          "BASIC_SICK_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "LM_PTO_HRS",
+          "LM_SICK_HRS",
+          "ATO_HRS",
+          "EXEMPT_HRS",
+          "EXEC_NOTE",
+          "PHYS_NOTE",
+          "MANUAL_CHECK",
+          "ENTRY_DATE",
+          "AUTH_BY",
+          "CHECK_KRONOS"
+        ],
+        "fields": {
+          "STD_HOURS": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "variables.PtoUseHrs",
+            "type": "double",
+            "calculation": {
+              "operation": "direct",
+              "operands": [
+                {"variable": "PtoUseHrs"}
+              ]
+            }
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "BASIC_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          },
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          }
+        }
+      },
+      "logging": {
+        "add_message": "PTO_HRS: {variables.PtoUseHrs}",
+        "update_message": "PTO_HRS from {current.PTO_HRS} to {variables.PtoUseHrs}"
+      }
+    },
+    {
+      "id": 26,
+      "name": "500: PREGNANCY - STD, CT PL, With PTO Supplement (PTO Only)",
+      "description": "If an employee is out for pregnancy, in STD period, CT PL is active, wants to supplement with PTO, and CT PL limits allow for STD hours, employee will be paid with STD hours and allowed PTO supplement hours. If STD_OR_NOT <0, then only PTO will be applied.",
+      "process_level": 500,
+      "reason_code": "PREGNANCY",
+      "variables_required": ["PtoUseHrs"],
+      "conditions": {
+        "required": ["C6", "C8", "C9", "C10", "C12"],
+        "forbidden": ["C11", "C14", "C18"],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "STD_HOURS",
+          "PTO_HRS",
+          "LOA_NO_HRS_PAID",
+          "BASIC_SICK_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "LM_PTO_HRS",
+          "LM_SICK_HRS",
+          "ATO_HRS",
+          "EXEMPT_HRS",
+          "EXEC_NOTE",
+          "PHYS_NOTE",
+          "MANUAL_CHECK",
+          "ENTRY_DATE",
+          "AUTH_BY",
+          "CHECK_KRONOS"
+        ],
+        "fields": {
+          "STD_HOURS": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "variables.PtoUseHrs",
+            "type": "double",
+            "calculation": {
+              "operation": "direct",
+              "operands": [
+                {"variable": "PtoUseHrs"}
+              ]
+            }
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "BASIC_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          },
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          }
+        }
+      },
+      "logging": {
+        "add_message": "PTO_HRS: {variables.PtoUseHrs}",
+        "update_message": "PTO_HRS from {current.PTO_HRS} to {variables.PtoUseHrs}"
+      }
+    },
+    {
+      "id": 27,
+      "name": "500: BONDING - No CT PL (Exhaust PTO)",
+      "description": "If an employee is out on bonding with no CT PL, we will pay 100% of their weekly hours to PTO until they reach 2 weeks or their specified amount of RTW PTO. If usable PTO balance is less than scheduled hours, then remaining usable PTO balance will be exhausted.",
+      "process_level": 500,
+      "reason_code": "BONDING",
+      "variables_required": ["PtoUsable"],
+      "conditions": {
+        "required": ["C7", "C11", "C15"],
+        "forbidden": ["C17", "C19"],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "STD_HOURS",
+          "PTO_HRS",
+          "LOA_NO_HRS_PAID",
+          "BASIC_SICK_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "LM_PTO_HRS",
+          "LM_SICK_HRS",
+          "ATO_HRS",
+          "EXEMPT_HRS",
+          "EXEC_NOTE",
+          "PHYS_NOTE",
+          "MANUAL_CHECK",
+          "ENTRY_DATE",
+          "AUTH_BY",
+          "CHECK_KRONOS"
+        ],
+        "fields": {
+          "STD_HOURS": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "variables.PtoUsable",
+            "type": "double",
+            "calculation": {
+              "operation": "direct",
+              "operands": [
+                {"variable": "PtoUsable"}
+              ]
+            }
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "BASIC_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          },
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          }
+        }
+      },
+      "logging": {
+        "add_message": "PTO_HRS: {variables.PtoUsable}",
+        "update_message": "PTO_HRS from {current.PTO_HRS} to {variables.PtoUsable}"
       }
     }
   ]

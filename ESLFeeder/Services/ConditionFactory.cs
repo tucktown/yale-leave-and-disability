@@ -28,7 +28,8 @@ namespace ESLFeeder.Services
                 { "C15", new C15() },
                 { "C16", new C16() },
                 { "C17", new C17() },
-                { "C18", new C18() }
+                { "C18", new C18() },
+                { "C19", new C19() }
             };
         }
 
