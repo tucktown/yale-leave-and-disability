@@ -46,7 +46,7 @@ namespace ESLFeeder.Services
         public IEnumerable<LeaveScenario> GetScenariosForProcessLevel(int processLevel)
         {
             return _configData?.Scenarios?
-                .Where(s => s.ProcessLevel == processLevel)
+                .Where(s => s.SupportsProcessLevel(processLevel))
                 .OrderBy(s => s.Id)
                 ?? Enumerable.Empty<LeaveScenario>();
         }
@@ -72,7 +72,7 @@ namespace ESLFeeder.Services
             var scenarios = Scenarios
                 .Where(s => 
                     s.ReasonCode.Trim().Equals(reasonCode.Trim(), StringComparison.OrdinalIgnoreCase) && 
-                    s.ProcessLevel == processLevel &&
+                    s.SupportsProcessLevel(processLevel) &&
                     s.IsActive)
                 .OrderBy(s => s.Id)
                 .ToList();
@@ -129,6 +129,18 @@ namespace ESLFeeder.Services
                             scenario.ReasonCode = scenario.ReasonCode.ToUpperInvariant();
                             _logger.LogInformation("Normalized reason code for scenario {Id} from '{OriginalReasonCode}' to '{NormalizedReasonCode}'",
                                 scenario.Id, originalReasonCode, scenario.ReasonCode);
+                        }
+                        
+                        // Ensure backward compatibility with ProcessLevel -> ProcessLevels
+                        if (scenario.ProcessLevels == null || !scenario.ProcessLevels.Any())
+                        {
+                            // Get the value from ProcessLevel if it exists and wasn't already transferred
+                            if (scenario.ProcessLevel.HasValue && scenario.ProcessLevel.Value > 0)
+                            {
+                                scenario.ProcessLevels = new List<int> { scenario.ProcessLevel.Value };
+                                _logger.LogInformation("Migrated single ProcessLevel {ProcessLevel} to ProcessLevels for scenario {Id}",
+                                    scenario.ProcessLevel.Value, scenario.Id);
+                            }
                         }
                     }
                 }
@@ -218,19 +230,29 @@ namespace ESLFeeder.Services
                 throw new InvalidOperationException($"Scenario name is required for scenario {scenario.Id}");
             }
 
-            if (scenario.ProcessLevel <= 0)
+            // Validate process levels
+            if (scenario.ProcessLevels == null || !scenario.ProcessLevels.Any())
             {
-                throw new InvalidOperationException($"Process level is required for scenario {scenario.Id}");
+                throw new InvalidOperationException($"At least one process level is required for scenario {scenario.Id}");
+            }
+
+            // Check that all process levels are valid
+            foreach (var processLevel in scenario.ProcessLevels)
+            {
+                if (processLevel <= 0)
+                {
+                    throw new InvalidOperationException($"All process levels must be positive numbers for scenario {scenario.Id}");
+                }
+
+                if (!_configData.Metadata.ValidProcessLevels.Contains(processLevel))
+                {
+                    throw new InvalidOperationException($"Invalid process level {processLevel} for scenario {scenario.Id}");
+                }
             }
 
             if (string.IsNullOrEmpty(scenario.ReasonCode))
             {
                 throw new InvalidOperationException($"Reason code is required for scenario {scenario.Id}");
-            }
-
-            if (!_configData.Metadata.ValidProcessLevels.Contains(scenario.ProcessLevel))
-            {
-                throw new InvalidOperationException($"Invalid process level {scenario.ProcessLevel} for scenario {scenario.Id}");
             }
 
             // Case-insensitive comparison for reason codes
@@ -249,6 +271,5 @@ namespace ESLFeeder.Services
                 throw new InvalidOperationException($"Invalid reason code {scenario.ReasonCode} for scenario {scenario.Id}");
             }
         }
-
     }
 } 

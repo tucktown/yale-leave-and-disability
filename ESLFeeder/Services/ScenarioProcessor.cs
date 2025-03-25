@@ -308,7 +308,7 @@ namespace ESLFeeder.Services
                 // Filter to relevant scenarios
                 var scenarios = allScenarios
                     .Where(s => s.ReasonCode.Trim().Equals(reasonCode, StringComparison.OrdinalIgnoreCase) && 
-                                s.ProcessLevel == processLevelInt &&
+                                s.SupportsProcessLevel(processLevelInt) &&
                                 s.IsActive)
                     .OrderBy(s => s.Id)
                     .ToList();
@@ -523,7 +523,7 @@ namespace ESLFeeder.Services
                 // Filter to relevant scenarios
                 var scenarios = allScenarios
                     .Where(s => s.ReasonCode.Trim().Equals(reasonCode, StringComparison.OrdinalIgnoreCase) && 
-                                s.ProcessLevel == processLevelInt &&
+                                s.SupportsProcessLevel(processLevelInt) &&
                                 s.IsActive)
                     .OrderBy(s => s.Id)
                     .ToList();

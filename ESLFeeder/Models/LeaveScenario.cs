@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Diagnostics;
+using System.Linq;
 using ESLFeeder.Interfaces;
 using ESLFeeder.Models.Converters;
 
@@ -27,11 +28,28 @@ namespace ESLFeeder.Models
         public string Name { get; set; } = string.Empty;
         
         /// <summary>
-        /// Process level determining when this scenario applies
+        /// Process level determining when this scenario applies (for backward compatibility)
         /// </summary>
-        [Required]
         [JsonPropertyName("process_level")]
-        public int ProcessLevel { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? ProcessLevel
+        {
+            get => ProcessLevels?.Count == 1 ? ProcessLevels[0] : null;
+            set
+            {
+                if (value.HasValue)
+                {
+                    ProcessLevels = new List<int> { value.Value };
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Process levels determining when this scenario applies
+        /// </summary>
+        [JsonPropertyName("process_levels")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int> ProcessLevels { get; set; } = new List<int>();
         
         /// <summary>
         /// Reason code associated with this scenario
@@ -87,6 +105,16 @@ namespace ESLFeeder.Models
         /// </summary>
         [JsonIgnore]
         public List<string> ExcludedConditions => Conditions.ExcludedConditions;
+
+        /// <summary>
+        /// Checks if this scenario supports the specified process level
+        /// </summary>
+        /// <param name="processLevel">The process level to check</param>
+        /// <returns>True if the scenario supports the process level, otherwise false</returns>
+        public bool SupportsProcessLevel(int processLevel)
+        {
+            return ProcessLevels != null && ProcessLevels.Contains(processLevel);
+        }
         
         /// <summary>
         /// Processes the Updates configuration into the Outputs dictionary after deserialization
@@ -194,12 +222,18 @@ namespace ESLFeeder.Models
                     new[] { nameof(Name) });
             }
             
-            // Validate ProcessLevel
-            if (ProcessLevel <= 0)
+            // Validate ProcessLevels
+            if (ProcessLevels == null || !ProcessLevels.Any())
             {
                 yield return new ValidationResult(
-                    "Process level must be a positive number",
-                    new[] { nameof(ProcessLevel) });
+                    "At least one process level must be specified",
+                    new[] { nameof(ProcessLevels) });
+            }
+            else if (ProcessLevels.Any(pl => pl <= 0))
+            {
+                yield return new ValidationResult(
+                    "All process levels must be positive numbers",
+                    new[] { nameof(ProcessLevels) });
             }
             
             // Validate ReasonCode

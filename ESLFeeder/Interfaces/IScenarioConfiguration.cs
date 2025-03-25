@@ -14,17 +14,17 @@ namespace ESLFeeder.Interfaces
         IEnumerable<LeaveScenario> Scenarios { get; }
 
         /// <summary>
-        /// Get scenarios by process level
+        /// Get scenarios that support a specific process level
         /// </summary>
         /// <param name="processLevel">The process level to filter by</param>
-        /// <returns>All scenarios matching the process level</returns>
+        /// <returns>All scenarios that support the specified process level</returns>
         IEnumerable<LeaveScenario> GetScenariosForProcessLevel(int processLevel);
 
         /// <summary>
-        /// Get scenarios by process level using a string (for backward compatibility)
+        /// Get scenarios that support a specific process level using a string (for backward compatibility)
         /// </summary>
         /// <param name="processLevel">The process level to filter by as a string</param>
-        /// <returns>All scenarios matching the process level</returns>
+        /// <returns>All scenarios that support the specified process level</returns>
         IEnumerable<LeaveScenario> GetScenariosForProcessLevel(string processLevel);
 
         /// <summary>
@@ -33,11 +33,11 @@ namespace ESLFeeder.Interfaces
         void ReloadConfigurations();
 
         /// <summary>
-        /// Get all scenarios for a specific reason code and process level
+        /// Get all scenarios for a specific reason code that support the specified process level
         /// </summary>
         /// <param name="reasonCode">The reason code to filter by</param>
         /// <param name="processLevel">The process level to filter by</param>
-        /// <returns>A list of scenarios matching the reason code and process level</returns>
+        /// <returns>A list of scenarios matching the reason code and supporting the process level</returns>
         List<LeaveScenario> GetScenariosForReasonCode(string reasonCode, int processLevel);
         
         /// <summary>
