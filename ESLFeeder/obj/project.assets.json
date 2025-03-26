@@ -1850,11 +1850,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\ESLFeeder.csproj",
+      "projectUniqueName": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\ESLFeeder.csproj",
       "projectName": "ESLFeeder",
-      "projectPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\ESLFeeder.csproj",
+      "projectPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\ESLFeeder.csproj",
       "packagesPath": "C:\\Users\\tucke\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\ESLFeeder\\obj\\",
+      "outputPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\tucke\\AppData\\Roaming\\NuGet\\NuGet.Config"

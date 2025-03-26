@@ -13,6 +13,7 @@ from typing import Dict, List, Any, Optional
 from difflib import unified_diff
 import re
 import copy
+import shutil
 
 def format_json_diff(old_json: Dict, new_json: Dict) -> str:
     """Format a diff between two JSON objects with color coding"""
@@ -474,160 +475,72 @@ def save_changes_to_file(target_json: Dict, scenario_map: Dict, output_file: str
                 f.write("\n" + "="*80 + "\n\n")
 
 def main():
-    """Main entry point for the script"""
-    parser = argparse.ArgumentParser(description="Update scenarios.json from JSON data")
-    parser.add_argument("--target", default="../ESLFeeder/Config/scenarios.json", 
-                        help="Path to target scenarios.json file to update")
-    parser.add_argument("--source", default="../ESLScenarios.json", 
-                        help="Path to source ESLScenarios.json file")
-    parser.add_argument("--test", action="store_true", 
-                        help="Run in test mode (don't write changes)")
-    parser.add_argument("--review", action="store_true",
-                        help="Review changes before applying them")
+    """Main function to process command line arguments and run the update."""
+    parser = argparse.ArgumentParser(description='ESL Scenarios Update Tool')
+    parser.add_argument('--source', required=True, help='Source JSON file with updated scenarios')
+    parser.add_argument('--target', required=True, help='Target JSON file to update')
+    parser.add_argument('--test', action='store_true', help='Run in test mode (no changes saved)')
     args = parser.parse_args()
 
-    print("\033[92mESL Scenarios Update Tool\033[0m")
-    print("\033[92m------------------------\033[0m")
+    # Load source and target JSON files
+    with open(args.source, 'r', encoding='utf-8-sig') as f:  # Use utf-8-sig to handle BOM
+        source_json = json.load(f)
 
-    # Verify files exist
-    if not os.path.exists(args.target):
-        print(f"\033[91mError: Target JSON file not found at {args.target}\033[0m")
-        sys.exit(1)
+    with open(args.target, 'r', encoding='utf-8') as f:
+        target_json = json.load(f)
 
-    if not os.path.exists(args.source):
-        print(f"\033[91mError: Source JSON file not found at {args.source}\033[0m")
-        sys.exit(1)
+    # Create a map of source scenarios by ID
+    scenario_map = {s['id']: s for s in source_json.get('scenarios', [])}
 
-    # Create backup of target JSON file
+    # Create backup of target file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_path = f"{args.target}.backup.{timestamp}"
-    try:
-        with open(args.target, 'r', encoding='utf-8') as source:
-            with open(backup_path, 'w', encoding='utf-8') as target:
-                target.write(source.read())
-        print(f"\033[93mCreated backup at {backup_path}\033[0m")
-    except Exception as e:
-        print(f"\033[91mError creating backup: {e}\033[0m")
-        sys.exit(1)
+    backup_file = f"{args.target}.backup.{timestamp}"
+    shutil.copy2(args.target, backup_file)
 
-    # 1. Read and parse the existing target JSON
-    try:
-        with open(args.target, 'r', encoding='utf-8') as f:
-            target_json = json.load(f)
-        print("\033[92mSuccessfully loaded target JSON file\033[0m")
-    except Exception as e:
-        print(f"\033[91mError parsing target JSON file: {e}\033[0m")
-        sys.exit(1)
+    # Create review file
+    review_file = f"scenario_changes_{timestamp}.txt"
+    save_changes_to_file(target_json, scenario_map, review_file)
 
-    # 2. Read and parse the source JSON (using utf-8-sig to handle BOM)
-    try:
-        with open(args.source, 'r', encoding='utf-8-sig') as f:
-            source_json = json.load(f)
-        print(f"\033[92mSuccessfully loaded source JSON file with {len(source_json.get('scenarios', []))} scenarios\033[0m")
-    except Exception as e:
-        print(f"\033[91mError parsing source JSON file: {e}\033[0m")
-        sys.exit(1)
+    if not args.test:
+        # Update existing scenarios and add new ones
+        updated_scenarios = []
+        existing_scenario_ids = set()
 
-    # 3. Create mapping structure from source JSON
-    scenario_map = {}
-    for scenario in source_json.get('scenarios', []):
-        scenario_id = scenario.get('id')
-        if scenario_id is None:
-            continue
+        # First, process existing scenarios
+        for scenario in target_json.get('scenarios', []):
+            scenario_id = scenario.get('id')
+            existing_scenario_ids.add(scenario_id)
+            if scenario_id in scenario_map:
+                # Update existing scenario
+                source_scenario = scenario_map[scenario_id]
+                updated_scenario = update_scenario(scenario, source_scenario)
+                updated_scenarios.append(updated_scenario)
+            else:
+                # Keep unchanged scenario
+                updated_scenarios.append(scenario)
 
-        scenario_map[scenario_id] = {
-            'id': scenario_id,
-            'name': scenario.get('name', ''),
-            'description': scenario.get('description', ''),
-            'reason_code': scenario.get('reason_code', ''),
-            'process_levels': scenario.get('process_levels', []),
-            'conditions': {
-                'required': scenario.get('conditions', {}).get('required', []),
-                'forbidden': scenario.get('conditions', {}).get('forbidden', []),
-                'optional': scenario.get('conditions', {}).get('optional', [])
-            },
-            'updates': scenario.get('updates', {}),
-            'variables_required': scenario.get('variables_required', []),
-            'logging': scenario.get('logging', {})
-        }
-
-    # 4. Update each scenario in the target JSON
-    updated_count = 0
-    skipped_count = 0
-    new_count = 0
-    
-    # Get existing scenario IDs
-    existing_ids = set()
-    for scenario in target_json.get('scenarios', []):
-        scenario_id = scenario.get('id')
-        existing_ids.add(scenario_id)
-    
-    # Update existing scenarios
-    for scenario in target_json.get('scenarios', []):
-        scenario_id = scenario.get('id')
-        if scenario_id in scenario_map:
-            source_scenario = scenario_map[scenario_id]
-            scenario_name = scenario.get('name', '')
-
-            print(f"\033[96mProcessing scenario #{scenario_id}: {scenario_name}\033[0m")
-
-            # Update the fields from source
-            scenario = update_scenario(scenario, source_scenario)
-
-            updated_count += 1
-        else:
-            skipped_count += 1
-
-    # Create new scenarios
-    for scenario_id, source_data in scenario_map.items():
-        if scenario_id not in existing_ids:
-            print(f"\033[96mCreating new scenario #{scenario_id}: {source_data.get('name', '')}\033[0m")
-            
-            # Create a new scenario with proper formatting
-            try:
+        # Add new scenarios
+        for scenario_id, source_data in scenario_map.items():
+            if scenario_id not in existing_scenario_ids:
                 new_scenario = create_new_scenario(source_data)
-                # Add the new scenario to the target JSON
-                target_json['scenarios'].append(new_scenario)
-                new_count += 1
-            except Exception as e:
-                print(f"\033[91mError creating new scenario #{scenario_id}: {e}\033[0m")
+                updated_scenarios.append(new_scenario)
 
-    # 5. Show update summary
-    print("\033[92mUpdate Summary:\033[0m")
-    print(f"\033[96m- Found {len(scenario_map)} scenarios in source JSON\033[0m")
-    print(f"\033[96m- Updated {updated_count} scenarios in target JSON\033[0m")
-    print(f"\033[96m- Created {new_count} new scenarios\033[0m")
-    print(f"\033[93m- Skipped {skipped_count} scenarios (not found in source)\033[0m")
+        # Sort scenarios by ID
+        updated_scenarios.sort(key=lambda x: x.get('id', 0))
 
-    # 6. Handle review mode and test mode
-    if args.review:
-        review_changes(target_json, scenario_map)
-        print("\033[93mDo you want to apply these changes? (y/n):\033[0m")
-        if input().lower() != 'y':
-            print("\033[93mChanges not applied. Original file preserved.\033[0m")
-            sys.exit(0)
-    elif args.test:
-        print("\033[93mTest mode enabled - not writing changes to file\033[0m")
-        # Save changes to a review file
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        review_file = f"scenario_changes_{timestamp}.txt"
-        save_changes_to_file(target_json, scenario_map, review_file)
-        print(f"\033[92mFull changes saved to {review_file} for review\033[0m")
-        print("\033[96mSample of first updated scenario:\033[0m")
-        if updated_count > 0:
-            first_scenario = next(s for s in target_json['scenarios'] if s['id'] in scenario_map)
-            print(json.dumps(first_scenario, indent=2))
+        # Update the target JSON with new scenarios list
+        target_json['scenarios'] = updated_scenarios
+
+        # Save the updated target file
+        with open(args.target, 'w', encoding='utf-8') as f:
+            json.dump(target_json, f, indent=2)
+
+        print(f"Changes have been saved to {args.target}")
+        print(f"A backup of the original file has been saved to {backup_file}")
     else:
-        try:
-            with open(args.target, 'w', encoding='utf-8') as f:
-                json.dump(target_json, f, indent=2)
-            print(f"\033[92mSuccessfully wrote updated JSON to {args.target}\033[0m")
-        except Exception as e:
-            print(f"\033[91mError writing to JSON file: {e}\033[0m")
-            print("\033[93mChanges not saved. Original file preserved.\033[0m")
-            sys.exit(1)
+        print("Test mode: No changes have been saved")
 
-    print("\033[92mScript completed successfully\033[0m")
+    print(f"Review of changes has been saved to {review_file}")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main() 
