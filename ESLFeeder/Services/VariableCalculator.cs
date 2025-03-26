@@ -188,16 +188,16 @@ namespace ESLFeeder.Services
                 string ptoAvail = row["PTO_AVAIL"]?.ToString();
                 variables.PtoAvail = string.IsNullOrEmpty(ptoAvail) ? 0.0 : Convert.ToDouble(ptoAvail);
                 
-                Console.WriteLine($"BASIC_SICK_HRS: {row["BASIC_SICK_HRS"]}");
-                string sickLast1Week = row["BASIC_SICK_HRS"]?.ToString();
+                Console.WriteLine($"BASICSICK_LAST1WEEK: {row["BASICSICK_LAST1WEEK"]}");
+                string sickLast1Week = row["BASICSICK_LAST1WEEK"]?.ToString();
                 variables.BasicSickLast1Week = string.IsNullOrEmpty(sickLast1Week) ? 0.0 : Convert.ToDouble(sickLast1Week);
                 
-                Console.WriteLine($"BRIDGEPORT_SICK_HRS: {row["BRIDGEPORT_SICK_HRS"]}");
-                string sickLast2Week = row["BRIDGEPORT_SICK_HRS"]?.ToString();
+                Console.WriteLine($"BASICSICK_LAST2WEEK: {row["BASICSICK_LAST2WEEK"]}");
+                string sickLast2Week = row["BASICSICK_LAST2WEEK"]?.ToString();
                 variables.BasicSickLast2Week = string.IsNullOrEmpty(sickLast2Week) ? 0.0 : Convert.ToDouble(sickLast2Week);
                 
-                Console.WriteLine($"BH_SICK_AVAIL: {row["BH_SICK_AVAIL"]}");
-                string sickAvail = row["BH_SICK_AVAIL"]?.ToString();
+                Console.WriteLine($"BASICSICK_AVAILABLE: {row["BASICSICK_AVAILABLE"]}");
+                string sickAvail = row["BASICSICK_AVAILABLE"]?.ToString();
                 variables.BasicSickAvail = string.IsNullOrEmpty(sickAvail) ? 0.0 : Convert.ToDouble(sickAvail);
                 
                 Console.WriteLine($"EMP_STATUS: {row["EMP_STATUS"]}");

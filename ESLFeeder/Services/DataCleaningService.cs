@@ -17,6 +17,7 @@ namespace ESLFeeder.Services
     {
         private readonly ILogger<DataCleaningService> _logger;
         private readonly Dictionary<string, string> _columnMappings;
+        private readonly Dictionary<string, object> _defaultColumns;
 
         public DataCleaningService(ILogger<DataCleaningService> logger)
         {
@@ -28,6 +29,14 @@ namespace ESLFeeder.Services
                 { "ACTUAL_END_DATE", "STD_APPROVED_THROUGH" },
                 { "GLCOMPANY", "GL_COMPANY" }
                 // Add more mappings as needed
+            };
+
+            // Add default columns that should always exist
+            _defaultColumns = new Dictionary<string, object>
+            {
+                { "BASICSICK_AVAILABLE", 0.0 },
+                { "BASICSICK_LAST1WEEK", 0.0 },
+                { "BASICSICK_LAST2WEEK", 0.0 }
             };
         }
 
@@ -50,6 +59,15 @@ namespace ESLFeeder.Services
                     }
                 }
 
+                // Add default columns if they don't exist
+                foreach (var defaultCol in _defaultColumns)
+                {
+                    if (!cleanedData.Columns.Contains(defaultCol.Key))
+                    {
+                        cleanedData.Columns.Add(defaultCol.Key, defaultCol.Value.GetType());
+                    }
+                }
+
                 // Process each row
                 foreach (DataRow inputRow in inputData.Rows)
                 {
@@ -68,6 +86,15 @@ namespace ESLFeeder.Services
                         if (_columnMappings.TryGetValue(columnName, out string mappedColumn))
                         {
                             cleanedRow[mappedColumn] = CleanValue(value, column.DataType);
+                        }
+                    }
+
+                    // Set default values for any missing columns
+                    foreach (var defaultCol in _defaultColumns)
+                    {
+                        if (!cleanedData.Columns.Contains(defaultCol.Key) || cleanedRow[defaultCol.Key] == DBNull.Value)
+                        {
+                            cleanedRow[defaultCol.Key] = defaultCol.Value;
                         }
                     }
 

@@ -375,7 +375,35 @@ namespace ESLFeeder.Services
                 result.Message = scenarioResult.Message;
                 result.ScenarioId = scenarioResult.ScenarioId;
                 result.ScenarioName = scenarioResult.ScenarioName;
+                result.ScenarioDescription = scenarioResult.ScenarioDescription;
+                result.RequiredConditions = scenarioResult.RequiredConditions;
+                result.ForbiddenConditions = scenarioResult.ForbiddenConditions;
                 result.Updates = scenarioResult.Updates;
+                
+                // Log the result state for debugging
+                _logger.LogDebug("CsvProcessor ProcessResult state - Success: {Success}, ScenarioId: {Id}, Name: {Name}, Description: {Description}, RequiredCount: {RequiredCount}, ForbiddenCount: {ForbiddenCount}, UpdatesCount: {UpdatesCount}",
+                    result.Success,
+                    result.ScenarioId,
+                    result.ScenarioName,
+                    result.ScenarioDescription,
+                    result.RequiredConditions?.Count ?? 0,
+                    result.ForbiddenConditions?.Count ?? 0,
+                    result.Updates?.Count ?? 0);
+                
+                // Log updates for debugging
+                if (result.Updates != null)
+                {
+                    _logger.LogDebug("Updates dictionary contains {Count} values:", result.Updates.Count);
+                    foreach (var kvp in result.Updates)
+                    {
+                        _logger.LogDebug("  {Key} = {Value}", kvp.Key, kvp.Value);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Updates dictionary is null");
+                }
+                
                 result.Variables = new Dictionary<string, object>();
                 
                 // Convert LeaveVariables to Dictionary<string, object>

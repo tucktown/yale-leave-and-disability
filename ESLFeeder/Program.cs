@@ -49,7 +49,7 @@ namespace ESLFeeder
                 }
                 else if (mode == "2")
                 {
-                    await TestSingleRecord(csvProcessor, csvPath, debugMode);
+                    await TestSingleRecord(csvProcessor, csvPath, debugMode, serviceProvider);
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace ESLFeeder
             }
         }
 
-        private static async Task TestSingleRecord(ICsvProcessor csvProcessor, string csvPath, bool debugMode)
+        private static async Task TestSingleRecord(ICsvProcessor csvProcessor, string csvPath, bool debugMode, IServiceProvider serviceProvider)
         {
             while (true)
             {
@@ -119,6 +119,16 @@ namespace ESLFeeder
                 Console.WriteLine("Processing single record...");
                 var result = await csvProcessor.ProcessSingleRecord(data, claimId, debugMode);
 
+                // Add debug logging for ProcessResult state
+                var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+                logger.LogDebug("ProcessResult state in TestSingleRecord - Success: {Success}, ScenarioId: {Id}, Name: {Name}, Description: {Description}, RequiredCount: {RequiredCount}, ForbiddenCount: {ForbiddenCount}",
+                    result.Success,
+                    result.ScenarioId,
+                    result.ScenarioName,
+                    result.ScenarioDescription,
+                    result.RequiredConditions?.Count ?? 0,
+                    result.ForbiddenConditions?.Count ?? 0);
+
                 Console.WriteLine("\nProcessing Results:");
                 Console.WriteLine("-------------------");
                 Console.WriteLine($"Success: {result.Success}");
@@ -126,39 +136,54 @@ namespace ESLFeeder
                 Console.WriteLine($"Scenario ID: {result.ScenarioId}");
                 Console.WriteLine($"Scenario Name: {result.ScenarioName}");
                 
-                Console.WriteLine("\nCalculated Variables:");
-                Console.WriteLine("---------------------");
-                foreach (var kvp in result.Variables.OrderBy(v => v.Key))
+                if (result.Success)
                 {
-                    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-                }
-                
-                // Display scenario evaluation details
-                if (result.ScenarioEvaluations.Count > 0)
-                {
-                    Console.WriteLine("\nScenario Evaluation Results:");
-                    Console.WriteLine("---------------------------");
-                    foreach (var scenarioEval in result.ScenarioEvaluations)
+                    Console.WriteLine("\nDescription:");
+                    Console.WriteLine(result.ScenarioDescription);
+                    
+                    Console.WriteLine("\nRequired Conditions:");
+                    foreach (var condition in result.RequiredConditions)
                     {
-                        Console.WriteLine($"Scenario ID: {scenarioEval.Key}");
-                        
-                        if (scenarioEval.Value.Count > 0)
+                        var conditionObj = serviceProvider.GetRequiredService<IConditionRegistry>().GetCondition(condition);
+                        if (conditionObj != null)
                         {
-                            Console.WriteLine("  Conditions:");
-                            foreach (var condition in scenarioEval.Value)
-                            {
-                                Console.WriteLine($"    {condition.Key}: {(condition.Value ? "Met" : "Not Met")}");
-                            }
+                            Console.WriteLine($"{condition}: {conditionObj.Description}");
                         }
-                        Console.WriteLine();
+                        else
+                        {
+                            Console.WriteLine($"{condition}: (No description available)");
+                        }
                     }
-                }
-                
-                Console.WriteLine("Scenario Updates:");
-                Console.WriteLine("-----------------");
-                foreach (var kvp in result.Updates)
-                {
-                    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+                    
+                    Console.WriteLine("\nForbidden Conditions:");
+                    foreach (var condition in result.ForbiddenConditions)
+                    {
+                        var conditionObj = serviceProvider.GetRequiredService<IConditionRegistry>().GetCondition(condition);
+                        if (conditionObj != null)
+                        {
+                            Console.WriteLine($"{condition}: {conditionObj.Description}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{condition}: (No description available)");
+                        }
+                    }
+                    
+                    Console.WriteLine("\nOutput Values:");
+                    Console.WriteLine("--------------------------------------------------");
+                    foreach (var kvp in result.Updates.OrderBy(v => v.Key))
+                    {
+                        var value = kvp.Value;
+                        if (value == null)
+                        {
+                            value = "(NULL)";
+                        }
+                        else if (value is DateTime dateTime)
+                        {
+                            value = dateTime.ToString("M/d/yyyy");
+                        }
+                        Console.WriteLine($"{kvp.Key}: {value}");
+                    }
                 }
                 
                 Console.WriteLine("--------------------------------------------------");

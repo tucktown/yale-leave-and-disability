@@ -101,6 +101,36 @@ namespace ESLFeeder.Services
                 // Set the scenario info
                 result.ScenarioId = scenario.Id;
                 result.ScenarioName = scenario.Name;
+                result.ScenarioDescription = scenario.Description;
+                
+                // Log the scenario details for debugging
+                _logger.LogDebug("Setting scenario details - ID: {Id}, Name: {Name}, Description: {Description}", 
+                    result.ScenarioId, result.ScenarioName, result.ScenarioDescription);
+                
+                // Get conditions from the ConditionSet
+                if (scenario.Conditions != null)
+                {
+                    result.RequiredConditions = scenario.Conditions.RequiredConditions.ToList();
+                    result.ForbiddenConditions = scenario.Conditions.ExcludedConditions.ToList();
+                    
+                    // Log conditions for debugging
+                    _logger.LogDebug("Setting conditions - Required: {Required}, Forbidden: {Forbidden}", 
+                        string.Join(", ", result.RequiredConditions),
+                        string.Join(", ", result.ForbiddenConditions));
+                }
+                else
+                {
+                    _logger.LogWarning("No conditions found for scenario {ScenarioId}", scenario.Id);
+                }
+                
+                // Log final ProcessResult state
+                _logger.LogDebug("Final ProcessResult state - Success: {Success}, ScenarioId: {Id}, Name: {Name}, Description: {Description}, RequiredCount: {RequiredCount}, ForbiddenCount: {ForbiddenCount}",
+                    result.Success,
+                    result.ScenarioId,
+                    result.ScenarioName,
+                    result.ScenarioDescription,
+                    result.RequiredConditions?.Count ?? 0,
+                    result.ForbiddenConditions?.Count ?? 0);
                 
                 // Add evaluated conditions to the result
                 if (variables != null && variables.EvaluatedConditions != null && variables.EvaluatedConditions.ContainsKey(scenario.Id))

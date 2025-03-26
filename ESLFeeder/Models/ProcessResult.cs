@@ -39,6 +39,21 @@ namespace ESLFeeder.Models
         public string ScenarioName { get; set; } = string.Empty;
         
         /// <summary>
+        /// The description of the selected scenario, if any
+        /// </summary>
+        public string ScenarioDescription { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// The required conditions for the selected scenario
+        /// </summary>
+        public List<string> RequiredConditions { get; set; } = new List<string>();
+        
+        /// <summary>
+        /// The forbidden conditions for the selected scenario
+        /// </summary>
+        public List<string> ForbiddenConditions { get; set; } = new List<string>();
+        
+        /// <summary>
         /// The updates to apply as a result of processing the leave request
         /// </summary>
         public Dictionary<string, object> Updates { get; set; } = new Dictionary<string, object>();

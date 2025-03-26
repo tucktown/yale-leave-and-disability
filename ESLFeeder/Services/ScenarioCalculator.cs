@@ -191,22 +191,67 @@ namespace ESLFeeder.Services
                 result.ScenarioId = scenario.Id;
                 result.ScenarioName = scenario.Name;
                 
-                // Process each output field in the scenario's Updates
-                foreach (var outputEntry in scenario.Outputs)
+                // Calculate updates
+                var updates = new Dictionary<string, object>();
+                
+                foreach (var output in scenario.Updates.Order)
                 {
-                    string outputId = outputEntry.Key;
-                    ScenarioOutput output = outputEntry.Value;
+                    if (output == null) continue;
                     
-                    // If this is a calculated output
-                    if (output.Type == ScenarioOutput.OutputType.Number && output is ScenarioOutput numberOutput)
+                    var field = scenario.Updates.Fields[output];
+                    object value;
+                    
+                    if (field.Type == "double")
                     {
-                        double outputValue = numberOutput.NumberValue;
-                        _logger.LogInformation("Using output {OutputId}: {OutputValue}", outputId, outputValue);
-                        
-                        // Add the output to the result
-                        result.AddOutputValue(outputId, outputValue);
+                        // Try to parse the source as a number
+                        if (double.TryParse(field.Source, out double numericValue))
+                        {
+                            value = numericValue;
+                        }
+                        else
+                        {
+                            // If not a number, try to get it from variables
+                            value = GetVariableValue(field.Source, variables);
+                        }
                     }
+                    else if (field.Type == "string")
+                    {
+                        // Handle special string values
+                        switch (field.Source?.ToUpper())
+                        {
+                            case "PTO_USABLE":
+                                value = variables.PtoUsable;
+                                break;
+                            case "NULL":
+                                value = null;
+                                break;
+                            default:
+                                value = field.Source;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Unknown field type {Type} for output {Output}", field.Type, output);
+                        continue;
+                    }
+                    
+                    updates[output] = value;
+                    _logger.LogDebug("Calculated output {Output} = {Value} (Type: {Type}, Source: {Source})", 
+                        output, value, field.Type, field.Source);
                 }
+                
+                // Log final updates dictionary
+                _logger.LogDebug("Final updates dictionary contains {Count} values:", updates.Count);
+                foreach (var kvp in updates)
+                {
+                    _logger.LogDebug("  {Key} = {Value} (Type: {Type})", 
+                        kvp.Key, 
+                        kvp.Value, 
+                        kvp.Value?.GetType().Name ?? "null");
+                }
+                
+                result.Updates = updates;
                 
                 return result;
             }
