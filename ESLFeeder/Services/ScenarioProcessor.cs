@@ -57,6 +57,9 @@ namespace ESLFeeder.Services
                     return result.WithError("Failed to calculate required variables");
                 }
 
+                // Store the row data in variables
+                variables.RowData = leaveData;
+
                 // 3. Set scenario identification properties
                 variables.ReasonCode = leaveData["REASON_CODE"].ToString().Trim();
                 variables.GlCompany = leaveData.Table.Columns.Contains("PROCESS_LEVEL")
@@ -111,7 +114,27 @@ namespace ESLFeeder.Services
                 if (scenario.Conditions != null)
                 {
                     result.RequiredConditions = scenario.Conditions.RequiredConditions.ToList();
-                    result.ForbiddenConditions = scenario.Conditions.ExcludedConditions.ToList();
+                    
+                    // Get all triggered excluded conditions from the evaluated conditions
+                    var triggeredExcludedConditions = new List<string>();
+                    if (variables?.EvaluatedConditions != null)
+                    {
+                        // Flatten all evaluated conditions across all scenarios
+                        var allConditions = variables.EvaluatedConditions
+                            .SelectMany(kvp => kvp.Value)
+                            .Where(kvp => kvp.Key.ToString().StartsWith("Excluded: ") && kvp.Value)
+                            .Select(kvp => kvp.Key.ToString().Replace("Excluded: ", ""))
+                            .Distinct()
+                            .ToList();
+                        
+                        triggeredExcludedConditions = allConditions;
+                    }
+                    
+                    // Combine the scenario's excluded conditions with any that were triggered
+                    result.ForbiddenConditions = scenario.Conditions.ExcludedConditions
+                        .Union(triggeredExcludedConditions)
+                        .Distinct()
+                        .ToList();
                     
                     // Log conditions for debugging
                     _logger.LogDebug("Setting conditions - Required: {Required}, Forbidden: {Forbidden}", 
@@ -133,9 +156,14 @@ namespace ESLFeeder.Services
                     result.ForbiddenConditions?.Count ?? 0);
                 
                 // Add evaluated conditions to the result
-                if (variables != null && variables.EvaluatedConditions != null && variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                if (variables != null && 
+                    variables.EvaluatedConditions != null && 
+                    variables.EvaluatedConditions.ContainsKey(scenario.Id))
                 {
-                    result.AddEvaluationDetail(scenario.Id, variables.EvaluatedConditions[scenario.Id]);
+                    // Strip "Excluded: " prefix from condition keys
+                    var cleanedConditions = variables.EvaluatedConditions[scenario.Id]
+                        .ToDictionary(kvp => kvp.Key.ToString().Replace("Excluded: ", ""), kvp => kvp.Value);
+                    result.AddEvaluationDetail(scenario.Id, cleanedConditions);
                 }
                 
                 return result;
@@ -175,6 +203,9 @@ namespace ESLFeeder.Services
                 {
                     return result.WithError("Failed to calculate required variables");
                 }
+
+                // Store the row data in variables
+                variables.RowData = leaveData;
 
                 // Set scenario identification properties
                 variables.ReasonCode = leaveData["REASON_CODE"].ToString().Trim();
@@ -408,7 +439,31 @@ namespace ESLFeeder.Services
                         bool result = false;
                         try
                         {
-                            result = conditionObj.Evaluate(null, variables);
+                            if (variables.RowData is System.Data.DataRow dataRow)
+                            {
+                                result = conditionObj.Evaluate(dataRow, variables);
+                            }
+                            else if (variables.RowData is Dictionary<string, object> dict)
+                            {
+                                // Convert dictionary to DataRow
+                                var tempTable = new System.Data.DataTable();
+                                foreach (var kvp in dict)
+                                {
+                                    tempTable.Columns.Add(kvp.Key);
+                                }
+                                var tempRow = tempTable.NewRow();
+                                foreach (var kvp in dict)
+                                {
+                                    tempRow[kvp.Key] = kvp.Value;
+                                }
+                                tempTable.Rows.Add(tempRow);
+                                result = conditionObj.Evaluate(tempRow, variables);
+                            }
+                            else
+                            {
+                                _logger.LogWarning("RowData is neither DataRow nor Dictionary<string, object>");
+                                result = false;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -427,7 +482,11 @@ namespace ESLFeeder.Services
                     // Store required condition results
                     if (requiredConditionResults.Count > 0)
                     {
-                        if (variables != null && variables.EvaluatedConditions != null && !variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                        if (variables?.EvaluatedConditions == null)
+                        {
+                            variables.EvaluatedConditions = new Dictionary<int, Dictionary<string, bool>>();
+                        }
+                        if (!variables.EvaluatedConditions.ContainsKey(scenario.Id))
                         {
                             variables.EvaluatedConditions[scenario.Id] = new Dictionary<string, bool>();
                         }
@@ -461,7 +520,31 @@ namespace ESLFeeder.Services
                         bool result = false;
                         try
                         {
-                            result = conditionObj.Evaluate(null, variables);
+                            if (variables.RowData is System.Data.DataRow dataRow)
+                            {
+                                result = conditionObj.Evaluate(dataRow, variables);
+                            }
+                            else if (variables.RowData is Dictionary<string, object> dict)
+                            {
+                                // Convert dictionary to DataRow
+                                var tempTable = new System.Data.DataTable();
+                                foreach (var kvp in dict)
+                                {
+                                    tempTable.Columns.Add(kvp.Key);
+                                }
+                                var tempRow = tempTable.NewRow();
+                                foreach (var kvp in dict)
+                                {
+                                    tempRow[kvp.Key] = kvp.Value;
+                                }
+                                tempTable.Rows.Add(tempRow);
+                                result = conditionObj.Evaluate(tempRow, variables);
+                            }
+                            else
+                            {
+                                _logger.LogWarning("RowData is neither DataRow nor Dictionary<string, object>");
+                                result = false;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -480,7 +563,11 @@ namespace ESLFeeder.Services
                     // Store excluded condition results
                     if (excludedConditionResults.Count > 0)
                     {
-                        if (variables != null && variables.EvaluatedConditions != null && !variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                        if (variables?.EvaluatedConditions == null)
+                        {
+                            variables.EvaluatedConditions = new Dictionary<int, Dictionary<string, bool>>();
+                        }
+                        if (!variables.EvaluatedConditions.ContainsKey(scenario.Id))
                         {
                             variables.EvaluatedConditions[scenario.Id] = new Dictionary<string, bool>();
                         }
@@ -500,6 +587,27 @@ namespace ESLFeeder.Services
 
                     // If we get here, all required conditions passed and no excluded conditions were triggered
                     _logger.LogInformation("Found matching scenario {ScenarioId}: {ScenarioName}", scenario.Id, scenario.Name);
+                    
+                    // Store the final condition results for the matching scenario
+                    if (variables?.EvaluatedConditions == null)
+                    {
+                        variables.EvaluatedConditions = new Dictionary<int, Dictionary<string, bool>>();
+                    }
+                    if (!variables.EvaluatedConditions.ContainsKey(scenario.Id))
+                    {
+                        variables.EvaluatedConditions[scenario.Id] = new Dictionary<string, bool>();
+                    }
+                    
+                    // Add all condition results
+                    foreach (var kvp in requiredConditionResults)
+                    {
+                        variables.EvaluatedConditions[scenario.Id][kvp.Key] = kvp.Value;
+                    }
+                    foreach (var kvp in excludedConditionResults)
+                    {
+                        variables.EvaluatedConditions[scenario.Id][kvp.Key] = kvp.Value;
+                    }
+                    
                     return scenario;
                 }
 

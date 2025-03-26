@@ -141,6 +141,8 @@ namespace ESLFeeder.Services
             {
                 case "basicpay":
                     return variables.BasicPay;
+                case "scheduledhours":
+                    return variables.ScheduledHours;
                 case "pto_available":
                 case "ptoavail":
                     return variables.PtoAvail;
@@ -208,9 +210,15 @@ namespace ESLFeeder.Services
                         {
                             value = numericValue;
                         }
+                        else if (field.Source?.StartsWith("variables.") == true)
+                        {
+                            // Remove the variables. prefix and get the value
+                            var variableName = field.Source.Substring("variables.".Length);
+                            value = GetVariableValue(variableName, variables);
+                        }
                         else
                         {
-                            // If not a number, try to get it from variables
+                            // If not a number or variables. prefix, try to get it from variables
                             value = GetVariableValue(field.Source, variables);
                         }
                     }

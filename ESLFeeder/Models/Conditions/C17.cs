@@ -27,10 +27,10 @@ namespace ESLFeeder.Models.Conditions
 
             // Check CTPL condition: CTPL_FORM IS NULL OR PAY_START_DATE > CTPL_END
             bool ctplInactive = row["CTPL_FORM"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_FORM"]?.ToString());
-            if (!ctplInactive && !(row["CTPL_END"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_END"]?.ToString())))
+            if (!ctplInactive && !(row["CTPL_END_DATE"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_END_DATE"]?.ToString())))
             {
                 var payStartDate = Convert.ToDateTime(row["PAY_START_DATE"]);
-                var ctplEndDate = Convert.ToDateTime(row["CTPL_END"]);
+                var ctplEndDate = Convert.ToDateTime(row["CTPL_END_DATE"]);
                 ctplInactive = payStartDate > ctplEndDate;
             }
 
@@ -61,14 +61,14 @@ namespace ESLFeeder.Models.Conditions
                 string.IsNullOrEmpty(data["CTPL_FORM"]?.ToString());
                 
             if (!ctplInactive && 
-                data.ContainsKey("CTPL_END") && 
-                data["CTPL_END"] != null && 
-                !string.IsNullOrEmpty(data["CTPL_END"]?.ToString()) &&
+                data.ContainsKey("CTPL_END_DATE") && 
+                data["CTPL_END_DATE"] != null && 
+                !string.IsNullOrEmpty(data["CTPL_END_DATE"]?.ToString()) &&
                 data.ContainsKey("PAY_START_DATE") && 
                 data["PAY_START_DATE"] != null)
             {
                 var payStartDate = Convert.ToDateTime(data["PAY_START_DATE"]);
-                var ctplEndDate = Convert.ToDateTime(data["CTPL_END"]);
+                var ctplEndDate = Convert.ToDateTime(data["CTPL_END_DATE"]);
                 ctplInactive = payStartDate > ctplEndDate;
             }
 

@@ -66,8 +66,10 @@ namespace ESLFeeder.Models
         // Scenario identification properties
         public string? ReasonCode { get; set; }
         public int GlCompany { get; set; }
-        
-        // Condition evaluation results
+
+        // Store the original row data for condition evaluation
+        public object? RowData { get; set; }
+
         public Dictionary<int, Dictionary<string, bool>> EvaluatedConditions { get; set; } = new Dictionary<int, Dictionary<string, bool>>();
     }
 } 

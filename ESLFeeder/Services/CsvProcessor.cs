@@ -355,12 +355,9 @@ namespace ESLFeeder.Services
 
                 var row = matchingRows[0];
                 
-                // Clean the data
-                var cleanedData = await _dataCleaningService.CleanData(data);
+                // Clean just the single row we want to process
+                var cleanedRow = _dataCleaningService.CleanData(row);
                 
-                // Get the cleaned row
-                var cleanedRow = cleanedData.Select($"CLAIM_ID = '{claimId}'")[0];
-
                 // Calculate variables
                 if (!_variableCalculator.CalculateVariables(cleanedRow, out var variables))
                 {

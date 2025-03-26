@@ -27,7 +27,8 @@ namespace ESLFeeder.Services
             _columnMappings = new Dictionary<string, string>
             {
                 { "ACTUAL_END_DATE", "STD_APPROVED_THROUGH" },
-                { "GLCOMPANY", "GL_COMPANY" }
+                { "GLCOMPANY", "GL_COMPANY" },
+                { "PTO_AVAIL", "PTO_AVAILABLE" }
                 // Add more mappings as needed
             };
 
@@ -137,6 +138,17 @@ namespace ESLFeeder.Services
                         // Add the target column with the same data type as the source column
                         var sourceColumn = inputRow.Table.Columns[mapping.Key];
                         cleanedTable.Columns.Add(mapping.Value, sourceColumn.DataType);
+                        _logger.LogDebug($"Added mapped column {mapping.Value} with type {sourceColumn.DataType}");
+                    }
+                }
+
+                // Add default columns if they don't exist
+                foreach (var defaultCol in _defaultColumns)
+                {
+                    if (!cleanedTable.Columns.Contains(defaultCol.Key))
+                    {
+                        cleanedTable.Columns.Add(defaultCol.Key, defaultCol.Value.GetType());
+                        _logger.LogDebug($"Added default column {defaultCol.Key} with type {defaultCol.Value.GetType()}");
                     }
                 }
                 
@@ -150,11 +162,23 @@ namespace ESLFeeder.Services
                     
                     // Clean the value
                     cleanedRow[columnName] = CleanValue(value, column.DataType);
+                    _logger.LogDebug($"Set original column {columnName} = {value}");
 
                     // If this column has a mapping, also set the mapped column
                     if (_columnMappings.TryGetValue(columnName, out string mappedColumn))
                     {
                         cleanedRow[mappedColumn] = CleanValue(value, column.DataType);
+                        _logger.LogDebug($"Set mapped column {mappedColumn} = {value}");
+                    }
+                }
+
+                // Set default values for any missing columns
+                foreach (var defaultCol in _defaultColumns)
+                {
+                    if (!cleanedTable.Columns.Contains(defaultCol.Key) || cleanedRow[defaultCol.Key] == DBNull.Value)
+                    {
+                        cleanedRow[defaultCol.Key] = defaultCol.Value;
+                        _logger.LogDebug($"Set default value {defaultCol.Key} = {defaultCol.Value}");
                     }
                 }
 
@@ -184,6 +208,7 @@ namespace ESLFeeder.Services
                 }
                 else if (dataType == typeof(decimal) || dataType == typeof(double) || dataType == typeof(float))
                 {
+                    _logger.LogDebug($"Cleaning numeric value: {value} of type {dataType}");
                     return CleanNumeric(value);
                 }
                 else if (dataType == typeof(int) || dataType == typeof(long))

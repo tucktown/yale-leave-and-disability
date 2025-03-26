@@ -56,7 +56,3 @@ C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability
 C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\obj\Debug\net7.0\ESLFeeder.pdb
 C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\obj\Debug\net7.0\ESLFeeder.genruntimeconfig.cache
 C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\obj\Debug\net7.0\ref\ESLFeeder.dll
-C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\bin\Debug\net7.0\Config\scenarios.json.backup.20250326_122947
-C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\bin\Debug\net7.0\Config\scenarios.json.backup.20250326_123559
-C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\bin\Debug\net7.0\Config\scenarios.json.backup.20250326_125027
-C:\Users\tucke\OneDrive\Rotera\Yale New Haven Health System\Leave and Disability Payments\CursorRef\yale-leave-and-disability\ESLFEEDER\bin\Debug\net7.0\Config\scenarios.json.backup.20250326_125519

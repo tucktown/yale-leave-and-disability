@@ -13,59 +13,61 @@ namespace ESLFeeder.Models.Conditions
 
         public bool Evaluate(DataRow row, LeaveVariables variables)
         {
+            return EvaluateInternal(row, variables);
+        }
+
+        private bool EvaluateInternal(object row, LeaveVariables variables)
+        {
             if (row == null)
+            {
+                System.Diagnostics.Debug.WriteLine("C19: row is null");
                 return false;
+            }
 
             // Get PTO available
-            if (string.IsNullOrEmpty(row["PTO_AVAILABLE"]?.ToString()))
+            object? ptoAvailableValue = null;
+            object? schedHrsValue = null;
+            object? eePtoRtwValue = null;
+
+            if (row is System.Data.DataRow dataRow)
+            {
+                ptoAvailableValue = dataRow["PTO_AVAILABLE"];
+                schedHrsValue = dataRow["SCHED_HRS"];
+                eePtoRtwValue = dataRow["EE_PTO_RTW"];
+            }
+            else if (row is Dictionary<string, object> dict)
+            {
+                dict.TryGetValue("PTO_AVAILABLE", out ptoAvailableValue);
+                dict.TryGetValue("SCHED_HRS", out schedHrsValue);
+                dict.TryGetValue("EE_PTO_RTW", out eePtoRtwValue);
+            }
+
+            if (string.IsNullOrEmpty(ptoAvailableValue?.ToString()))
+            {
+                System.Diagnostics.Debug.WriteLine($"C19: PTO_AVAILABLE is null or empty");
                 return false;
+            }
                 
-            // Get scheduled hours
-            if (string.IsNullOrEmpty(row["SCHED_HRS"]?.ToString()))
+            if (string.IsNullOrEmpty(schedHrsValue?.ToString()))
+            {
+                System.Diagnostics.Debug.WriteLine($"C19: SCHED_HRS is null or empty");
                 return false;
+            }
                 
             // Get return to work reserve (if available)
             double ptoRtwReserve = 0;
-            if (!string.IsNullOrEmpty(row["EE_PTO_RTW"]?.ToString()))
+            if (!string.IsNullOrEmpty(eePtoRtwValue?.ToString()))
             {
-                ptoRtwReserve = Convert.ToDouble(row["EE_PTO_RTW"]);
+                ptoRtwReserve = Convert.ToDouble(eePtoRtwValue);
             }
                 
-            var ptoAvailable = Convert.ToDouble(row["PTO_AVAILABLE"]);
-            var schedHrs = Convert.ToDouble(row["SCHED_HRS"]);
+            var ptoAvailable = Convert.ToDouble(ptoAvailableValue);
+            var schedHrs = Convert.ToDouble(schedHrsValue);
             
             // Calculate usable PTO (available - rtw reserve)
             var ptoUsable = ptoAvailable - ptoRtwReserve;
             
-            // Return true if usable PTO is greater than or equal to scheduled hours
-            return ptoUsable >= schedHrs;
-        }
-        
-        public bool Evaluate(Dictionary<string, object> data, LeaveVariables variables)
-        {
-            if (data == null)
-                return false;
-                
-            // Get PTO available
-            if (!data.ContainsKey("PTO_AVAILABLE") || string.IsNullOrEmpty(data["PTO_AVAILABLE"]?.ToString()))
-                return false;
-                
-            // Get scheduled hours
-            if (!data.ContainsKey("SCHED_HRS") || string.IsNullOrEmpty(data["SCHED_HRS"]?.ToString()))
-                return false;
-                
-            // Get return to work reserve (if available)
-            double ptoRtwReserve = 0;
-            if (data.ContainsKey("EE_PTO_RTW") && !string.IsNullOrEmpty(data["EE_PTO_RTW"]?.ToString()))
-            {
-                ptoRtwReserve = Convert.ToDouble(data["EE_PTO_RTW"]);
-            }
-                
-            var ptoAvailable = Convert.ToDouble(data["PTO_AVAILABLE"]);
-            var schedHrs = Convert.ToDouble(data["SCHED_HRS"]);
-            
-            // Calculate usable PTO (available - rtw reserve)
-            var ptoUsable = ptoAvailable - ptoRtwReserve;
+            System.Diagnostics.Debug.WriteLine($"C19: ptoAvailable={ptoAvailable}, schedHrs={schedHrs}, ptoRtwReserve={ptoRtwReserve}, ptoUsable={ptoUsable}, result={ptoUsable >= schedHrs}");
             
             // Return true if usable PTO is greater than or equal to scheduled hours
             return ptoUsable >= schedHrs;

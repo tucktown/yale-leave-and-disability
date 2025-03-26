@@ -132,7 +132,10 @@ namespace ESLFeeder
                 Console.WriteLine("\nProcessing Results:");
                 Console.WriteLine("-------------------");
                 Console.WriteLine($"Success: {result.Success}");
-                Console.WriteLine($"Message: {result.Message}");
+                if (!string.IsNullOrEmpty(result.Message))
+                {
+                    Console.WriteLine($"Message: {result.Message}");
+                }
                 Console.WriteLine($"Scenario ID: {result.ScenarioId}");
                 Console.WriteLine($"Scenario Name: {result.ScenarioName}");
                 
@@ -156,17 +159,24 @@ namespace ESLFeeder
                     }
                     
                     Console.WriteLine("\nForbidden Conditions:");
-                    foreach (var condition in result.ForbiddenConditions)
+                    if (result.ForbiddenConditions?.Any() == true)
                     {
-                        var conditionObj = serviceProvider.GetRequiredService<IConditionRegistry>().GetCondition(condition);
-                        if (conditionObj != null)
+                        foreach (var condition in result.ForbiddenConditions)
                         {
-                            Console.WriteLine($"{condition}: {conditionObj.Description}");
+                            var conditionObj = serviceProvider.GetRequiredService<IConditionRegistry>().GetCondition(condition);
+                            if (conditionObj != null)
+                            {
+                                Console.WriteLine($"{condition}: {conditionObj.Description}");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"{condition}: (No description available)");
+                            }
                         }
-                        else
-                        {
-                            Console.WriteLine($"{condition}: (No description available)");
-                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("None");
                     }
                     
                     Console.WriteLine("\nOutput Values:");
