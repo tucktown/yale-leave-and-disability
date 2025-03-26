@@ -277,15 +277,79 @@ def update_scenario(current, new):
     
     return updated
 
+def create_new_scenario(source_scenario):
+    """Create a new scenario from source data with proper formatting."""
+    # Start with a deep copy of the source data
+    new_scenario = copy.deepcopy(source_scenario)
+    
+    # Ensure required fields exist
+    if 'id' not in new_scenario:
+        raise ValueError("New scenario must have an ID")
+    
+    if 'name' not in new_scenario:
+        new_scenario['name'] = f"New Scenario {new_scenario['id']}"
+    
+    if 'description' not in new_scenario:
+        new_scenario['description'] = ""
+    
+    if 'reason_code' not in new_scenario:
+        new_scenario['reason_code'] = ""
+    
+    # Handle process levels
+    if 'process_level' in new_scenario and 'process_levels' not in new_scenario:
+        new_scenario['process_levels'] = [new_scenario['process_level']]
+        del new_scenario['process_level']
+    elif 'process_levels' not in new_scenario:
+        new_scenario['process_levels'] = []
+    
+    # Ensure conditions structure
+    if 'conditions' not in new_scenario:
+        new_scenario['conditions'] = {'required': [], 'forbidden': [], 'optional': []}
+    elif not isinstance(new_scenario['conditions'], dict):
+        # Convert to dictionary if it's not already
+        new_scenario['conditions'] = {'required': [], 'forbidden': [], 'optional': []}
+    else:
+        # Ensure all condition types exist
+        if 'required' not in new_scenario['conditions']:
+            new_scenario['conditions']['required'] = []
+        if 'forbidden' not in new_scenario['conditions']:
+            new_scenario['conditions']['forbidden'] = []
+        if 'optional' not in new_scenario['conditions']:
+            new_scenario['conditions']['optional'] = []
+    
+    # Format updates section
+    if 'updates' in new_scenario:
+        structured_updates = create_updates_structure(new_scenario['updates'])
+        new_scenario['updates'] = structured_updates
+        
+        # Add variables_required based on updates
+        variables_required = get_required_variables(structured_updates)
+        if variables_required:
+            new_scenario['variables_required'] = variables_required
+        elif 'variables_required' not in new_scenario:
+            new_scenario['variables_required'] = []
+        
+        # Set logging message based on updates
+        new_scenario['logging'] = format_logging_messages(structured_updates)
+    else:
+        new_scenario['updates'] = {"order": [], "fields": {}}
+        new_scenario['variables_required'] = []
+        new_scenario['logging'] = {"add_message": "", "update_message": ""}
+    
+    return new_scenario
+
 def save_changes_to_file(target_json: Dict, scenario_map: Dict, output_file: str) -> None:
     """Save the full changes to a file for review"""
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write("ESL Scenarios Update Review\n")
         f.write("=========================\n\n")
         
+        # First process existing scenarios
+        existing_scenarios = []
         for scenario in target_json.get('scenarios', []):
             scenario_id = scenario.get('id')
             if scenario_id in scenario_map:
+                existing_scenarios.append(scenario_id)
                 # Create an updated version of the scenario
                 source_scenario = scenario_map[scenario_id]
                 updated_scenario = update_scenario(scenario, source_scenario)
@@ -369,6 +433,45 @@ def save_changes_to_file(target_json: Dict, scenario_map: Dict, output_file: str
                     f.write("• No changes required\n")
                 
                 f.write("\n" + "="*80 + "\n\n")
+        
+        # Now process new scenarios that don't exist in the target
+        for scenario_id, source_data in scenario_map.items():
+            if scenario_id not in existing_scenarios:
+                # This is a new scenario - create a properly formatted one
+                new_scenario = create_new_scenario(source_data)
+                
+                # Write scenario header
+                f.write(f"NEW Scenario #{scenario_id}: {new_scenario.get('name', '')}\n")
+                f.write("=" * 80 + "\n\n")
+                
+                # Write current values
+                f.write("Current Values:\n")
+                f.write("-" * 40 + "\n")
+                f.write("None - This is a new scenario that doesn't exist in the target file.\n\n")
+                
+                # Write proposed values
+                f.write("Proposed Values:\n")
+                f.write("-" * 40 + "\n")
+                f.write(f"Name: {new_scenario.get('name', '')}\n")
+                f.write(f"Description: {new_scenario.get('description', '')}\n")
+                f.write(f"Reason Code: {new_scenario.get('reason_code', '')}\n")
+                
+                if 'process_level' in new_scenario:
+                    f.write(f"Process Level: {new_scenario.get('process_level', '')}\n")
+                elif 'process_levels' in new_scenario:
+                    f.write(f"Process Levels: {json.dumps(new_scenario.get('process_levels', []), indent=2)}\n")
+                
+                f.write(f"Conditions: {json.dumps(new_scenario.get('conditions', {}), indent=2)}\n")
+                f.write(f"Variables Required: {json.dumps(new_scenario.get('variables_required', []), indent=2)}\n")
+                f.write(f"Logging: {json.dumps(new_scenario.get('logging', {}), indent=2)}\n")
+                f.write(f"Updates: {json.dumps(new_scenario.get('updates', {}), indent=2)}\n\n")
+                
+                # Write summary of changes
+                f.write("Changes Summary:\n")
+                f.write("-" * 40 + "\n")
+                f.write("• Adding new scenario\n")
+                
+                f.write("\n" + "="*80 + "\n\n")
 
 def main():
     """Main entry point for the script"""
@@ -433,6 +536,7 @@ def main():
             continue
 
         scenario_map[scenario_id] = {
+            'id': scenario_id,
             'name': scenario.get('name', ''),
             'description': scenario.get('description', ''),
             'reason_code': scenario.get('reason_code', ''),
@@ -450,7 +554,15 @@ def main():
     # 4. Update each scenario in the target JSON
     updated_count = 0
     skipped_count = 0
-
+    new_count = 0
+    
+    # Get existing scenario IDs
+    existing_ids = set()
+    for scenario in target_json.get('scenarios', []):
+        scenario_id = scenario.get('id')
+        existing_ids.add(scenario_id)
+    
+    # Update existing scenarios
     for scenario in target_json.get('scenarios', []):
         scenario_id = scenario.get('id')
         if scenario_id in scenario_map:
@@ -466,10 +578,25 @@ def main():
         else:
             skipped_count += 1
 
+    # Create new scenarios
+    for scenario_id, source_data in scenario_map.items():
+        if scenario_id not in existing_ids:
+            print(f"\033[96mCreating new scenario #{scenario_id}: {source_data.get('name', '')}\033[0m")
+            
+            # Create a new scenario with proper formatting
+            try:
+                new_scenario = create_new_scenario(source_data)
+                # Add the new scenario to the target JSON
+                target_json['scenarios'].append(new_scenario)
+                new_count += 1
+            except Exception as e:
+                print(f"\033[91mError creating new scenario #{scenario_id}: {e}\033[0m")
+
     # 5. Show update summary
     print("\033[92mUpdate Summary:\033[0m")
     print(f"\033[96m- Found {len(scenario_map)} scenarios in source JSON\033[0m")
     print(f"\033[96m- Updated {updated_count} scenarios in target JSON\033[0m")
+    print(f"\033[96m- Created {new_count} new scenarios\033[0m")
     print(f"\033[93m- Skipped {skipped_count} scenarios (not found in source)\033[0m")
 
     # 6. Handle review mode and test mode
