@@ -121,11 +121,8 @@ namespace ESLFeeder.Services
                     variables.BasicSickLast2Week = Convert.ToDouble(data["BASICSICK_LAST2WEEK"]);
                 }
 
-                // Calculate hours per week
-                variables.HoursPerWeek = variables.ScheduledHours;
-
                 // Calculate additional variables
-                variables.BasicPay = variables.PayRate * variables.ScheduledHours;
+                variables.WeeklyWage = variables.PayRate * variables.ScheduledHours;
                 
                 // Additional calculations
                 CalculatePtoAvailability(variables);
@@ -205,7 +202,7 @@ namespace ESLFeeder.Services
 
                 Console.WriteLine("Starting calculations...");
 
-                // Basic wage calculations
+                // Weekly wage calculations
                 variables.WeeklyWage = variables.PayRate * variables.ScheduledHours;
                 Console.WriteLine($"WeeklyWage: {variables.WeeklyWage}");
                 
@@ -226,10 +223,6 @@ namespace ESLFeeder.Services
                 // STD calculations
                 variables.StdOrNot = CalculateStdOrNot(variables);
                 Console.WriteLine($"STD Or Not: {variables.StdOrNot}");
-                
-                // Add missing properties
-                variables.HoursPerWeek = variables.ScheduledHours;
-                variables.BasicPay = variables.PayRate * variables.ScheduledHours;
 
                 // PTO Supplement calculations
                 CalculatePtoAvailability(variables);

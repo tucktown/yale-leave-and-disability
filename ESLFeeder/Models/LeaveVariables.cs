@@ -10,8 +10,6 @@ namespace ESLFeeder.Models
         public double PayRate { get; set; }
         public bool IsPartialHours => ScheduledHours < 40;
         public double WeeklyWage { get; set; }
-        public double BasicPay { get; set; }
-        public double HoursPerWeek { get; set; }
 
         // CTPL calculations
         public double MinWage40 { get; set; }

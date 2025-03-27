@@ -139,8 +139,6 @@ namespace ESLFeeder.Services
             // Add mappings for variable names to their property getters
             switch (variableName.ToLower())
             {
-                case "basicpay":
-                    return variables.BasicPay;
                 case "scheduledhours":
                     return variables.ScheduledHours;
                 case "pto_available":
@@ -158,8 +156,6 @@ namespace ESLFeeder.Services
                     return variables.BasicSickLast1Week;
                 case "basicsick_last2week":
                     return variables.BasicSickLast2Week;
-                case "hours_per_week":
-                    return variables.HoursPerWeek;
                 case "employee_status":
                     // Convert status string to numeric value (e.g., Active=1, LOA=2, etc.)
                     return ConvertStatusToNumeric(variables.EmployeeStatus);
