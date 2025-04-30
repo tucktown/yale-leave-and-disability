@@ -154,6 +154,12 @@ def create_updates_structure(updates_dict):
         "fields": {}
     }
     
+    # Define which fields should be treated as doubles even when referencing variables
+    numeric_fields = {
+        'BASIC_SICK_HRS', 'STD_HOURS', 'PTO_HRS', 'LM_PTO_HRS', 'EXEMPT_HRS',
+        'ATO_HRS', 'BRIDGEPORT_SICK_HRS', 'LM_SICK_HRS', 'LOA_NO_HRS_PAID'
+    }
+    
     for field, value in updates_dict.items():
         std_field = standardize_field_name(field)
         result["order"].append(std_field)
@@ -202,6 +208,12 @@ def create_updates_structure(updates_dict):
             result["fields"][std_field] = {
                 "source": value,
                 "type": "string"
+            }
+        elif std_field in numeric_fields:
+            # Handle numeric fields that reference variables
+            result["fields"][std_field] = {
+                "source": str(value),
+                "type": "double"
             }
         else:
             # Default case - string values

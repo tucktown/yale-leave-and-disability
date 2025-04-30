@@ -398,14 +398,14 @@
       "conditions": {
         "forbidden": [
           "C13",
-          "C16",
           "C18",
           "C20"
         ],
         "required": [
           "C6",
           "C11",
-          "C12"
+          "C12",
+          "C16"
         ]
       },
       "updates": {
@@ -594,8 +594,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -826,8 +837,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -842,8 +864,8 @@
             "type": "double"
           },
           "PTO_HRS": {
-            "source": "PTO_USE_HRS",
-            "type": "string"
+            "source": "variables.PtoUseHrs",
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -974,8 +996,8 @@
     },
     {
       "id": 9,
-      "name": "500/900: MEDICAL/SURGICAL - No STD, No CT PL, No Basic Sick, No PTO Supplement (LOA)",
-      "description": "If an employee is out on Medical/Surgical, is not approved for STD, is not active for CTPL, has no Basic Sick, and does not wish to supplement with PTO, all hours will be marked as LOA No Hours Paid.",
+      "name": "500/900: MEDICAL/SURGICAL - No STD, No CT PL, No PTO Supplement (LOA)",
+      "description": "If an employee is out on Medical/Surgical, is not approved for STD, is not active for CTPL, and does not wish to supplement with PTO, all hours will be marked as LOA No Hours Paid.",
       "process_levels": [
         500,
         900
@@ -987,8 +1009,7 @@
       "conditions": {
         "forbidden": [
           "C12",
-          "C18",
-          "C20"
+          "C18"
         ],
         "required": [
           "C7",
@@ -1086,8 +1107,8 @@
     },
     {
       "id": 10,
-      "name": "500/900: MEDICAL/SURGICAL - No STD, CT PL, No Basic Sick, With PTO Supplement",
-      "description": "If an employee is not STD eligible, CT PL is active, has no Basic Sick, and wants to supplement with PTO and are able to, PTO hours will be paid according to CT PL limits.",
+      "name": "500/900: MEDICAL/SURGICAL - No STD, CT PL, With PTO Supplement",
+      "description": "If an employee is not STD eligible, CT PL is active, and wants to supplement with PTO and are able to, PTO hours will be paid according to CT PL limits.",
       "process_levels": [
         500,
         900
@@ -1099,8 +1120,7 @@
       "conditions": {
         "forbidden": [
           "C11",
-          "C18",
-          "C20"
+          "C18"
         ],
         "required": [
           "C7",
@@ -1185,8 +1205,8 @@
             "type": "double"
           },
           "PTO_HRS": {
-            "source": "PTO_USE_HOURS",
-            "type": "string"
+            "source": "variables.PtoUseHrs",
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -1202,7 +1222,7 @@
     {
       "id": 11,
       "name": "500/900: MEDICAL/SURGICAL - No STD, CT PL, With PTO Supplement (LAO)",
-      "description": "If an employee is not STD eligible, CT PL is active, has no Basic Sick, and wants to supplement with PTO but are not able to, all scheduled hours will be allocated to LOA No Hours Paid.",
+      "description": "If an employee is not STD eligible, CT PL is active, and wants to supplement with PTO but are not able to, all scheduled hours will be allocated to LOA No Hours Paid.",
       "process_levels": [
         500,
         900
@@ -1215,8 +1235,7 @@
         "forbidden": [
           "C11",
           "C14",
-          "C18",
-          "C20"
+          "C18"
         ],
         "required": [
           "C7",
@@ -1400,8 +1419,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -1633,8 +1663,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -1649,8 +1690,8 @@
             "type": "double"
           },
           "PTO_HRS": {
-            "source": "PTO_USE_HRS",
-            "type": "string"
+            "source": "variables.PtoUseHrs",
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -1997,8 +2038,8 @@
             "type": "double"
           },
           "PTO_HRS": {
-            "source": "PTO_USE_HOURS",
-            "type": "string"
+            "source": "variables.PtoUseHrs",
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -2137,13 +2178,15 @@
         "ScheduledHours"
       ],
       "conditions": {
-        "forbidden": {},
+        "forbidden": [
+          "C18"
+        ],
         "required": [
           "C7",
           "C11",
           "C15",
           "C16",
-          "C18"
+          "C19"
         ]
       },
       "updates": {
@@ -2364,6 +2407,8 @@
         ],
         "required": [
           "C7",
+          "C9",
+          "C10",
           "C15"
         ]
       },
@@ -2442,8 +2487,8 @@
             "type": "double"
           },
           "PTO_HRS": {
-            "source": "PTO_USE_HRS",
-            "type": "string"
+            "source": "variables.PtoUseHrs",
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -2475,7 +2520,9 @@
           "C17"
         ],
         "required": [
-          "C7"
+          "C7",
+          "C9",
+          "C10"
         ]
       },
       "updates": {
@@ -2891,7 +2938,7 @@
           },
           "PTO_HRS": {
             "source": "PTO_USE_HRS",
-            "type": "string"
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -3007,7 +3054,7 @@
           },
           "PTO_HRS": {
             "source": "PTO_USE_HRS",
-            "type": "string"
+            "type": "double"
           },
           "AUTH_BY": {
             "source": "ESL",
@@ -3337,8 +3384,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "BASIC_SICK_AVAIL_CALC",
-            "type": "string"
+            "source": "BasicSickAvailCalc",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -3589,8 +3636,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "PTO_SUPP_HRS",
-            "type": "string"
+            "source": "PtoSuppHrs",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -3603,8 +3650,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -3703,8 +3761,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "BASIC_SICK_HRS_CALC",
-            "type": "string"
+            "source": "BasicSickAvailCalc",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -3717,8 +3775,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -3817,8 +3886,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "PTO_SUPP_HRS",
-            "type": "string"
+            "source": "PtoSuppHrs",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -3931,8 +4000,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "BASIC_SICK_HRS_CALC",
-            "type": "string"
+            "source": "BasicSickAvailCalc",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -4045,8 +4114,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "PTO_SUPP_HRS",
-            "type": "string"
+            "source": "PtoSuppHrs",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -4059,8 +4128,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -4159,8 +4239,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "BASIC_SICK_AVAIL_CALC",
-            "type": "string"
+            "source": "BasicSickAvailCalc",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -4173,8 +4253,19 @@
             "allow_null": true
           },
           "STD_HOURS": {
-            "source": "(STD_OR_NOT / PAY_RATE)",
-            "type": "string"
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
           },
           "ENTRY_DATE": {
             "source": "CURRENT_DATE",
@@ -4273,8 +4364,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "PTO_SUPP_HRS",
-            "type": "string"
+            "source": "PtoSuppHrs",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -4387,8 +4478,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "BASIC_SICK_AVAIL_CALC",
-            "type": "string"
+            "source": "BasicSickAvailCalc",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -4633,8 +4724,8 @@
             "allow_null": true
           },
           "BASIC_SICK_HRS": {
-            "source": "BASIC_SICK_AVAIL_CALC",
-            "type": "string"
+            "source": "BasicSickAvailCalc",
+            "type": "double"
           },
           "MANUAL_CHECK": {
             "source": "null",
@@ -4701,7 +4792,10 @@
         900
       ],
       "conditions": {
-        "forbidden": "C18",
+        "forbidden": [
+          "C18",
+          "C19"
+        ],
         "required": [
           "C7",
           "C11",
@@ -4794,6 +4888,1467 @@
         }
       },
       "variables_required": [],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 43,
+      "name": "500/900: MEDICAL/SURGICAL - STD, CT PL, Basic Sick (Full or Exhaust), With PTO Supplement",
+      "reason_code": "MEDICAL/SURGICAL",
+      "description": "If an employee is out on Medical/Surgical leave, with STD, CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours up to allowed amount, supplemented with Basic Sick and PTO hours, up to the allowed PTO SUPP hours, exhausting Basic Sick balances before using PTO.",
+      "conditions": {
+        "forbidden": "C11",
+        "required": [
+          "C6",
+          "C8",
+          "C9",
+          "C10",
+          "C12",
+          "C20"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "BasicSickStdCtpl",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                { "variable": "STDOrNot" },
+                { "variable": "PayRate" }
+              ]
+            }
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "PtoBasicSickStdCtpl",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "BasicSickStdCtpl",
+        "PtoBasicSickStdCtpl",
+        "STDOrNot",
+        "PayRate"
+       ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 44,
+      "name": "500/900: MEDICAL/SURGICAL - STD, CT PL, Basic Sick (Full or Exhaust), With PTO Supplement (NO STD)",
+      "reason_code": "MEDICAL/SURGICAL",
+      "description": "If an employee is out on Medical/Surgical leave, with STD, CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours up to allowed amount, supplemented with Basic Sick and PTO hours, up to the allowed PTO SUPP hours, exhausting Basic Sick balances before using PTO. If STD or Not is 0 and no usable Basic Sick/PTO balance remains, hours will be paid with LOA.",
+      "conditions": {
+        "forbidden": [
+          "C8",
+          "C11"
+        ],
+        "required": [
+          "C6",
+          "C9",
+          "C10",
+          "C12",
+          "C20"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "BasicSickStdCtpl",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "PtoBasicSickStdCtpl",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "BasicSickStdCtpl",
+        "PtoBasicSickStdCtpl",
+        "STDOrNot",
+        "PayRate"
+       ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 45,
+      "name": "500/900: MEDICAL/SURGICAL - STD, No CT PL, Basic Sick (Full), With PTO Supplement",
+      "reason_code": "MEDICAL/SURGICAL",
+      "description": "If an employee is out on Medical/Surgical leave, with STD,  no CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours equal to 60% of scheduled hours. The remaining 40% of hours will be supplemented with Basic Sick and PTO, exhausting Basic Sick before using PTO.",
+      "conditions": {
+        "forbidden": {},
+        "required": [
+          "C6",
+          "C11",
+          "C12",
+          "C20",
+          "C21"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "variables.ScheduledHours * 0.4",
+            "type": "double",
+            "calculation": {
+              "operation": "multiply",
+              "operands": [
+                {
+                  "variable": "ScheduledHours"
+                },
+                {
+                  "constant": 0.4
+                }
+              ]
+            }
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "source": "variables.ScheduledHours * 0.6",
+            "type": "double",
+            "calculation": {
+              "operation": "multiply",
+              "operands": [
+                {
+                  "variable": "ScheduledHours"
+                },
+                {
+                  "constant": 0.6
+                }
+              ]
+            }
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "ScheduledHours"
+      ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 46,
+      "name": "500/900: PREGNANCY - STD, CT PL, Basic Sick (Full), With PTO Supplement",
+      "reason_code": "PREGNANCY",
+      "description": "If an employee is out on Medical/Surgical leave, with STD,  no CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours equal to 60% of scheduled hours. The remaining 40% of hours will be supplemented with Basic Sick and PTO, exhausting Basic Sick before using PTO.",
+      "conditions": {
+        "forbidden": [ 
+          "C11"
+        ],
+        "required": [
+          "C6",
+          "C8",
+          "C9",
+          "C10",
+          "C12",
+          "C20",
+          "C22"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "PtoSuppHrs",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+                "operands": [
+                  { "variable": "StdOrNot" },
+                  { "variable": "PayRate" }
+                ]
+              }
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "ScheduledHours"
+      ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 47,
+      "name": "500/900: PREGNANCY - STD, CT PL, Basic Sick (Exhaust), With PTO Supplement",
+      "reason_code": "PREGNANCY",
+      "description": "If an employee is out on Medical/Surgical leave, with STD,  no CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours equal to 60% of scheduled hours. The remaining 40% of hours will be supplemented with Basic Sick and PTO, exhausting Basic Sick before using PTO.",
+      "conditions": {
+        "forbidden": [
+          "C11",
+          "C22"
+        ],
+        "required": [
+          "C6",
+          "C8",
+          "C9",
+          "C10",
+          "C12",
+          "C20"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "PtoSuppHrs",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "source": "(StdOrNot / PayRate)",
+            "type": "double",
+            "calculation": {
+              "operation": "divide",
+              "operands": [
+                {
+                  "variable": "StdOrNot"
+                },
+                {
+                  "variable": "PayRate"
+                }
+              ]
+            }
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 48,
+      "name": "500/900: PREGNANCY - STD, CT PL, No Basic Sick, With PTO Supplement (LOA)",
+      "reason_code": "PREGNANCY",
+      "description": "Is an employee is out for pregnancy, in STD period, CT PL is active, has no Basic Sick, wants to supplement with PTO, and CT PL limits allow for STD hours, employee will be paid with STD hours and allowed PTO supplement hours. If no STD is allowed, and no PTO hours remain, all hours will be paid to LOA.",
+      "conditions": {
+        "forbidden": [
+          "C11",
+          "C14",
+          "C18",
+          "C20"
+        ],
+        "required": [
+          "C6",
+          "C8",
+          "C9",
+          "C10",
+          "C12"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "variables.ScheduledHours",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "ScheduledHours"
+      ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 49,
+      "name": "500/900: PREGNANCY - STD, No CT PL, Basic Sick Available (Full), With PTO Supplement",
+      "reason_code": "PREGNANCY",
+      "description": "Employee is out for pregnancy, in STD period, has not applied for CT PL, has Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, Basic Sick will be applied up to 40% of scheduled hours.",
+      "conditions": {
+        "forbidden": [
+          "C18"
+        ],
+        "required": [
+          "C6",
+          "C11",
+          "C12",
+          "C20",
+          "C21"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+                    "type": "double",
+                    "calculation": {
+                      "operation": "multiply",
+                      "operands": [
+                        { "variable": "ScheduledHours" },
+                        { "constant": 0.4 }
+                      ]
+                    }
+                  },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+                    "type": "double",
+                    "calculation": {
+                      "operation": "multiply",
+                      "operands": [
+                        { "variable": "ScheduledHours" },
+                        { "constant": 0.6 }
+                      ]
+                    }
+                  },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "ScheduledHours"
+      ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 50,
+      "name": "500/900: PREGNANCY - STD, No CT PL, Basic Sick Available (Exhaust), With PTO Supplement",
+      "reason_code": "PREGNANCY",
+      "description": "Employee is out for pregnancy, in STD period, has not applied for CT PL, has Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, Basic Sick will be applied up to 40% of scheduled hours.",
+      "conditions": {
+        "forbidden": [
+          "C18",
+          "C21"
+        ],
+        "required": [
+          "C6",
+          "C11",
+          "C12",
+          "C20"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "BasicSickAvailCalc",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+                    "type": "double",
+                    "calculation": {
+                      "operation": "multiply",
+                      "operands": [
+                        { "variable": "ScheduledHours" },
+                        { "constant": 0.6 }
+                      ]
+                    }
+                  },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "PtoBasicSickStd",
+            "type": "double"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "ScheduledHours",
+        "PtoBasicSickStd",
+        "BasicSickAvailCalc"
+      ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 51,
+      "name": "500/900: PREGNANCY - STD, No CT PL, No Basic Sick Available, With PTO Supplement",
+      "reason_code": "PREGNANCY",
+      "description": "Employee is out for pregnancy, in STD period, has not applied for CT PL, has no Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, PTO will be applied up to 40% of scheduled hours.",
+      "conditions": {
+        "forbidden": [
+          "C18",
+          "C20"
+        ],
+        "required": [
+          "C6",
+          "C11",
+          "C12",
+          "C13"
+        ],
+        "optional": []
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "source": "variables.ScheduledHours * 0.6",
+            "type": "double",
+            "calculation": {
+              "operation": "multiply",
+              "operands": [
+                {
+                  "variable": "ScheduledHours"
+                },
+                {
+                  "constant": 0.6
+                }
+              ]
+            }
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "variables.ScheduledHours * 0.4",
+            "type": "double",
+            "calculation": {
+              "operation": "multiply",
+              "operands": [
+                {
+                  "variable": "ScheduledHours"
+                },
+                {
+                  "constant": 0.4
+                }
+              ]
+            }
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "process_levels": [
+        500,
+        900
+      ],
+      "variables_required": [
+        "ScheduledHours"
+      ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 101,
+      "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (MEDICAL/SURGICAL)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "MEDICAL/SURGICAL",
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": [
+          "C23"
+        ]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 102,
+      "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (PREGNANCY)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "PREGNANCY",
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": [
+          "C23"
+        ]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 103,
+      "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (BONDING)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "BONDING",
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": [
+          "C23"
+        ]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 104,
+      "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (MEDICAL/SURGICAL)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "MEDICAL/SURGICAL",
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": [
+          "C24"
+        ]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 105,
+      "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (PREGNANCY)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "PREGNANCY",
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": [
+          "C24"
+        ]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 106,
+      "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (BONDING)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "BONDING",
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": [
+          "C24"
+        ]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 107,
+      "name": "500/900: SKIP - MEDICAL/SURGICAL - STD, CT PL, and FMLA are not approved",
+      "description": "500/900: SKIP - MEDICAL/SURGICAL - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "MEDICAL/SURGICAL",
+      "conditions": {
+        "forbidden": [
+          "C6",
+          "C9",
+          "C10",
+          "C16"
+        ],
+        "required": [
+          "C18"
+        ]
+      },
+      "updates": {},
+      "logging": {}
+    },
+    {
+      "id": 108,
+      "name": "500/900: SKIP - PREGNANCY - STD, CT PL, and FMLA are not approved",
+      "description": "500/900: SKIP - PREGNANCY - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "PREGNANCY",
+      "conditions": {
+        "forbidden": [
+          "C6",
+          "C9",
+          "C10",
+          "C16"
+        ],
+        "required": [
+          "C18"
+        ]
+      },
+      "updates": {},
+      "logging": {}
+    },
+    {
+      "id": 109,
+      "name": "500/900: SKIP - BONDING - STD, CT PL, and FMLA are not approved",
+      "description": "500/900: SKIP - BONDING - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "BONDING",
+      "conditions": {
+        "forbidden": [
+          "C6",
+          "C9",
+          "C10",
+          "C16"
+        ],
+        "required": [
+          "C18"
+        ]
+      },
+      "updates": {},
+      "logging": {}
+    },
+    {
+      "id": 52,
+      "name": "500/900: PREGNANCY - STD, No CT PL, No Basic Sick Available, With PTO Supplement (Exhaust PTO)",
+      "description": "Employee is out for pregnancy, in STD period, has not applied for CT PL, has no Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, PTO will be applied up to 40% of scheduled hours.",
+      "reason_code": "PREGNANCY",
+      "process_levels": [
+        500,
+        900
+      ],
+      "conditions": {
+        "forbidden": [
+          "C13",
+          "C18",
+          "C20"
+        ],
+        "required": [
+          "C6",
+          "C11",
+          "C12"
+        ]
+      },
+      "updates": {
+        "order": [
+          "CHECK_KRONOS",
+          "LM_PTO_HRS",
+          "EXEMPT_HRS",
+          "ATO_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "EXEC_NOTE",
+          "BASIC_SICK_HRS",
+          "MANUAL_CHECK",
+          "PHYS_NOTE",
+          "STD_HOURS",
+          "ENTRY_DATE",
+          "LM_SICK_HRS",
+          "LOA_NO_HRS_PAID",
+          "PTO_HRS",
+          "AUTH_BY"
+        ],
+        "fields": {
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "string"
+          },
+          "LM_PTO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEMPT_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "ATO_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "EXEC_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "BASIC_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "MANUAL_CHECK": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "PHYS_NOTE": {
+            "source": "null",
+            "type": "string",
+            "allow_null": true
+          },
+          "STD_HOURS": {
+            "type": "double",
+            "calculation": {
+              "operation": "multiply",
+              "operands": [
+                { "variable": "ScheduledHours" },
+                { "constant": 0.6 }
+              ]
+            }
+          },
+          "ENTRY_DATE": {
+            "source": "CURRENT_DATE",
+            "type": "date"
+          },
+          "LM_SICK_HRS": {
+            "source": "0",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "0",
+            "type": "double"
+          },
+          "PTO_HRS": {
+            "source": "PTO_USABLE",
+            "type": "string" 
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "string"
+          }
+        }
+      },
+      "variables_required": [
+        "ScheduledHours",
+        "PtoUsable"
+       ],
       "logging": {
         "add_message": "",
         "update_message": ""

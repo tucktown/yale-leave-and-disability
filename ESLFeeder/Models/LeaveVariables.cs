@@ -28,9 +28,20 @@ namespace ESLFeeder.Models
         public double PtoAvailCalc { get; set; }
         public double PtoUsable { get; set; }
         public double PtoUseHrs { get; set; }
+        public double PtoBasicSickStd { get; set; }
 
         // Basic Sick calculations
         public double BasicSickAvailCalc { get; set; }
+
+        // Basic Sick STD calculation
+        public double BasicSickStd { get; set; }
+
+        // Basic Sick STD CTPL calculation
+        public double BasicSickStdCtpl { get; set; }
+
+        // PTO Basic Sick STD calculation
+        // PTO Basic Sick STD CTPL calculation
+        public double PtoBasicSickStdCtpl { get; set; }
 
         // Pay period information
         public int WeekOfPP { get; set; }
@@ -45,6 +56,7 @@ namespace ESLFeeder.Models
         public string? StdApprovedThrough { get; set; }
         public string? CtplApprovedAmount { get; set; }
         public string? EePtoRtw { get; set; }
+        public string? EePtoSupp { get; set; }
         public double PtoHrsLast1Week { get; set; }
         public double PtoHrsLast2Week { get; set; }
         public double PtoAvail { get; set; }

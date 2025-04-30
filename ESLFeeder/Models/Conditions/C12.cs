@@ -13,39 +13,28 @@ namespace ESLFeeder.Models.Conditions
 
         public bool Evaluate(DataRow row, LeaveVariables variables)
         {
-            // Check if EE_PTO_SUPP is true
+            // Check if EE_PTO_SUPP is Y
             if (row != null && row.Table.Columns.Contains("EE_PTO_SUPP"))
             {
                 if (row["EE_PTO_SUPP"] != DBNull.Value)
                 {
-                    if (bool.TryParse(row["EE_PTO_SUPP"].ToString(), out bool eePtoSupp))
-                        return eePtoSupp;
-                    
-                    // Handle case where it's a string "true" or "false"
-                    if (row["EE_PTO_SUPP"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase))
-                        return true;
+                    string eePtoSupp = row["EE_PTO_SUPP"].ToString().Trim();
+                    return eePtoSupp.Equals("Y", StringComparison.OrdinalIgnoreCase);
                 }
             }
             
-            return variables.PtoSuppDollars > 0;
+            return false;
         }
         
         public bool Evaluate(Dictionary<string, object> data, LeaveVariables variables)
         {
             if (data != null && data.ContainsKey("EE_PTO_SUPP") && data["EE_PTO_SUPP"] != null)
             {
-                if (data["EE_PTO_SUPP"] is bool eePtoSupp)
-                    return eePtoSupp;
-                
-                string eePtoSuppStr = data["EE_PTO_SUPP"].ToString();
-                if (bool.TryParse(eePtoSuppStr, out bool parsedValue))
-                    return parsedValue;
-                    
-                if (eePtoSuppStr.Equals("true", StringComparison.OrdinalIgnoreCase))
-                    return true;
+                string eePtoSupp = data["EE_PTO_SUPP"].ToString().Trim();
+                return eePtoSupp.Equals("Y", StringComparison.OrdinalIgnoreCase);
             }
             
-            return variables.PtoSuppDollars > 0;
+            return false;
         }
     }
 }

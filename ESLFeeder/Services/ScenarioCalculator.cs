@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using ESLFeeder.Models;
+using System.Text.Json;
 
 namespace ESLFeeder.Services
 {
@@ -156,9 +157,28 @@ namespace ESLFeeder.Services
                     return variables.BasicSickLast1Week;
                 case "basicsick_last2week":
                     return variables.BasicSickLast2Week;
+                case "pto_use_hrs":
+                case "ptousehrs":
+                    return variables.PtoUseHrs;
                 case "employee_status":
                     // Convert status string to numeric value (e.g., Active=1, LOA=2, etc.)
                     return ConvertStatusToNumeric(variables.EmployeeStatus);
+                case "std_or_not":
+                case "stdornot":
+                    return variables.StdOrNot;
+                case "pay_rate":
+                case "payrate":
+                    return variables.PayRate;
+                case "basicsickstdctpl":
+                    return variables.BasicSickStdCtpl;
+                case "ptobasicsickstdctpl":
+                    return variables.PtoBasicSickStdCtpl;
+                case "ptosupphrs":
+                    return variables.PtoSuppHrs;
+                case "basicsickavailcalc":
+                    return variables.BasicSickAvailCalc;
+                case "ptobasicsickstd":
+                    return variables.PtoBasicSickStd;
                 default:
                     _logger.LogWarning("Unknown variable name: {VariableName}", variableName);
                     return 0.0;
@@ -201,8 +221,14 @@ namespace ESLFeeder.Services
                     
                     if (field.Type == "double")
                     {
+                        // Check if there's a calculation configuration
+                        if (field.Calculation != null)
+                        {
+                            var calculationConfig = JsonSerializer.Serialize(field.Calculation);
+                            value = CalculateValue(JsonSerializer.Deserialize<CalculationConfig>(calculationConfig), variables);
+                        }
                         // Try to parse the source as a number
-                        if (double.TryParse(field.Source, out double numericValue))
+                        else if (double.TryParse(field.Source, out double numericValue))
                         {
                             value = numericValue;
                         }
@@ -232,6 +258,18 @@ namespace ESLFeeder.Services
                             default:
                                 value = field.Source;
                                 break;
+                        }
+                    }
+                    else if (field.Type == "date")
+                    {
+                        if (field.Source?.ToUpper() == "CURRENT_DATE")
+                        {
+                            value = DateTime.Now;
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Unsupported date source {Source} for output {Output}", field.Source, output);
+                            continue;
                         }
                     }
                     else

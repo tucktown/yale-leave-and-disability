@@ -54,15 +54,19 @@ namespace ESLFeeder.Models.Conditions
                 return false;
             }
                 
+            var ptoAvailable = Convert.ToDouble(ptoAvailableValue);
+            var schedHrs = Convert.ToDouble(schedHrsValue);
+            
             // Get return to work reserve (if available)
             double ptoRtwReserve = 0;
             if (!string.IsNullOrEmpty(eePtoRtwValue?.ToString()))
             {
-                ptoRtwReserve = Convert.ToDouble(eePtoRtwValue);
+                string eePtoRtw = eePtoRtwValue.ToString().Trim();
+                if (eePtoRtw.Equals("Y", StringComparison.OrdinalIgnoreCase))
+                {
+                    ptoRtwReserve = schedHrs * 2; // Reserve 2 weeks of scheduled hours
+                }
             }
-                
-            var ptoAvailable = Convert.ToDouble(ptoAvailableValue);
-            var schedHrs = Convert.ToDouble(schedHrsValue);
             
             // Calculate usable PTO (available - rtw reserve)
             var ptoUsable = ptoAvailable - ptoRtwReserve;

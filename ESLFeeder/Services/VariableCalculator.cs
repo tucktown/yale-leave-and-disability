@@ -124,9 +124,17 @@ namespace ESLFeeder.Services
                 // Calculate additional variables
                 variables.WeeklyWage = variables.PayRate * variables.ScheduledHours;
                 
+                // Calculate PtoSuppDollars and PtoSuppHrs early to break dependency
+                bool isStdInactiveForDict = string.IsNullOrEmpty(variables.StdApprovedThrough) || 
+                                            variables.PayStartDate > DateTime.Parse(variables.StdApprovedThrough);
+                variables.PtoSuppDollars = isStdInactiveForDict
+                    ? variables.WeeklyWage - variables.CtplPayment
+                    : variables.WeeklyWage - variables.CtplPayment - variables.StdOrNot; // Needs StdOrNot, CtplPayment, WeeklyWage
+                variables.PtoSuppHrs = variables.PtoSuppDollars / variables.PayRate;
+                
                 // Additional calculations
-                CalculatePtoAvailability(variables);
                 CalculateBasicSickAvailability(variables);
+                CalculatePtoAvailability(variables);
 
                 return true;
             }
@@ -224,11 +232,21 @@ namespace ESLFeeder.Services
                 variables.StdOrNot = CalculateStdOrNot(variables);
                 Console.WriteLine($"STD Or Not: {variables.StdOrNot}");
 
+                // Calculate PtoSuppDollars and PtoSuppHrs early to break dependency
+                bool isStdInactiveForRow = string.IsNullOrEmpty(variables.StdApprovedThrough) || 
+                                        variables.PayStartDate > DateTime.Parse(variables.StdApprovedThrough);
+                variables.PtoSuppDollars = isStdInactiveForRow
+                    ? variables.WeeklyWage - variables.CtplPayment
+                    : variables.WeeklyWage - variables.CtplPayment - variables.StdOrNot; // Needs StdOrNot, CtplPayment, WeeklyWage
+                variables.PtoSuppHrs = variables.PtoSuppDollars / variables.PayRate;
+                Console.WriteLine($"Moved PTO Supp $: {variables.PtoSuppDollars}");
+                Console.WriteLine($"Moved PTO Supp Hrs: {variables.PtoSuppHrs}");
+
+                // Basic Sick calculations first due to dependency
+                CalculateBasicSickAvailability(variables);
+
                 // PTO Supplement calculations
                 CalculatePtoAvailability(variables);
-
-                // Basic Sick calculations
-                CalculateBasicSickAvailability(variables);
 
                 return true;
             }
@@ -241,30 +259,69 @@ namespace ESLFeeder.Services
 
         private void CalculatePtoAvailability(LeaveVariables variables)
         {
-            // Calculate PTO availability
-            variables.PtoAvailCalc = variables.PtoAvail - variables.PtoHrsLast1Week - variables.PtoHrsLast2Week;
+            // Calculate PTO supplement dollars (PTO_SUPP_DOLLARS) - MOVED TO CalculateVariables
+            // bool isStdInactive = string.IsNullOrEmpty(variables.StdApprovedThrough) || 
+            //                     variables.PayStartDate > DateTime.Parse(variables.StdApprovedThrough);
             
-            // Calculate PTO usability
-            variables.PtoUsable = variables.PtoAvailCalc > 0 ? variables.PtoAvailCalc : 0;
+            // variables.PtoSuppDollars = isStdInactive
+            //     ? variables.WeeklyWage - variables.CtplPayment
+            //     : variables.WeeklyWage - variables.CtplPayment - variables.StdOrNot;
+
+            // Calculate PTO supplement hours (PTO_SUPP_HRS) - MOVED TO CalculateVariables
+            // variables.PtoSuppHrs = variables.PtoSuppDollars / variables.PayRate;
+
+            // Calculate PTO reserve based on EE_PTO_RTW (PTO_RESERVE)
+            if (variables.EePtoRtw?.Equals("Y", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                variables.PtoReserve = variables.ScheduledHours * 2;
+            }
+            else // Handles N, null, or empty string
+            {
+                variables.PtoReserve = 0;
+            }
             
-            // Calculate PTO use hours
-            variables.PtoUseHrs = variables.WeekOfPP == 1 
-                ? Math.Min(variables.ScheduledHours - variables.PtoHrsLast1Week, variables.PtoUsable)
-                : Math.Min(variables.ScheduledHours - variables.PtoHrsLast2Week, variables.PtoUsable);
-                
-            // Calculate PTO supplement dollars
-            variables.PtoSuppDollars = variables.PtoUseHrs * variables.PayRate;
+            // Calculate PTO availability based on WEEK_OF_PP (PTO_AVAIL_CALC)
+            variables.PtoAvailCalc = variables.WeekOfPP == 1
+                ? variables.PtoAvail - variables.PtoHrsLast1Week - variables.PtoHrsLast2Week
+                : variables.PtoAvail - variables.PtoHrsLast1Week;
             
-            // Calculate PTO supplement hours
-            variables.PtoSuppHrs = variables.PtoUseHrs;
+            // Calculate PTO usability based on PTO_AVAIL and PTO_RESERVE (PTO_USABLE)
+            variables.PtoUsable = (variables.PtoAvailCalc - variables.PtoReserve) > 0 
+                ? (variables.PtoAvailCalc - variables.PtoReserve) 
+                : 0;
             
-            // Calculate PTO reserve
-            variables.PtoReserve = variables.PtoAvail - variables.PtoHrsLast1Week - variables.PtoHrsLast2Week - variables.PtoUseHrs;
+            // Calculate PTO use hours based on PTO_USABLE and PTO_SUPP_HRS (PTO_USE_HRS)
+            variables.PtoUseHrs = (variables.PtoUsable - variables.PtoSuppHrs > 0 && variables.PtoSuppHrs > 0)
+                ? variables.PtoSuppHrs
+                : 0;
+
+            // Calculate PTO Basic Sick STD
+            double fortyPercentOfScheduledHours = variables.ScheduledHours * 0.4;
+            if (variables.PtoUsable >= fortyPercentOfScheduledHours - variables.BasicSickStd)
+            {
+                variables.PtoBasicSickStd = fortyPercentOfScheduledHours - variables.BasicSickStd;
+            }
+            else
+            {
+                variables.PtoBasicSickStd = variables.PtoUsable;
+            }
+            Console.WriteLine($"PTO Basic Sick STD: {variables.PtoBasicSickStd}");
+
+            // Calculate PTO Basic Sick STD CTPL
+            if (variables.PtoUseHrs >= variables.PtoSuppHrs - variables.BasicSickStdCtpl)
+            {
+                variables.PtoBasicSickStdCtpl = variables.PtoSuppHrs - variables.BasicSickStdCtpl;
+            }
+            else
+            {
+                variables.PtoBasicSickStdCtpl = variables.PtoUsable;
+            }
             
             Console.WriteLine($"PTO Usable: {variables.PtoUsable}");
             Console.WriteLine($"PTO Use Hrs: {variables.PtoUseHrs}");
             Console.WriteLine($"PTO Supp $: {variables.PtoSuppDollars}");
             Console.WriteLine($"PTO Reserve: {variables.PtoReserve}");
+            Console.WriteLine($"PTO Basic Sick STD CTPL: {variables.PtoBasicSickStdCtpl}");
         }
         
         private void CalculateBasicSickAvailability(LeaveVariables variables)
@@ -272,17 +329,40 @@ namespace ESLFeeder.Services
             // Calculate Basic Sick availability
             variables.BasicSickAvailCalc = variables.BasicSickAvail - variables.BasicSickLast1Week - variables.BasicSickLast2Week;
             Console.WriteLine($"Basic Sick Avail Calc: {variables.BasicSickAvailCalc}");
+
+            // Calculate Basic Sick STD
+            double fortyPercentOfScheduledHours = variables.ScheduledHours * 0.4;
+            if (variables.BasicSickAvailCalc >= fortyPercentOfScheduledHours)
+            {
+                variables.BasicSickStd = fortyPercentOfScheduledHours;
+            }
+            else
+            {
+                variables.BasicSickStd = variables.BasicSickAvailCalc;
+            }
+            Console.WriteLine($"Basic Sick STD: {variables.BasicSickStd}");
+
+            // Calculate Basic Sick STD CTPL
+            if (variables.BasicSickAvailCalc >= variables.PtoSuppHrs)
+            {
+                variables.BasicSickStdCtpl = variables.PtoSuppHrs;
+            }
+            else if (variables.BasicSickAvailCalc > 0)
+            {
+                variables.BasicSickStdCtpl = variables.BasicSickAvailCalc;
+            }
+            else
+            {
+                variables.BasicSickStdCtpl = 0;
+            }
+            Console.WriteLine($"Basic Sick STD CTPL: {variables.BasicSickStdCtpl}");
         }
         
         private double CalculateStdOrNot(LeaveVariables variables)
         {
-            // Logic for STD or Not calculation
-            if (!string.IsNullOrEmpty(variables.StdApprovedThrough))
-            {
-                return 1.0; // STD Approved
-            }
-            
-            return 0.0; // Not STD Approved
+            // Calculate STD or Not based on weekly wage and CTPL payment
+            double stdAmount = variables.WeeklyWage * 0.6;
+            return stdAmount > variables.CtplPayment ? (stdAmount - variables.CtplPayment) : 0;
         }
     }
 } 

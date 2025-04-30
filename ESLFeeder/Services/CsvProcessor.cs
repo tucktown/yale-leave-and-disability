@@ -147,7 +147,7 @@ namespace ESLFeeder.Services
                 // Get all possible scenario output columns from the configuration
                 var scenarioOutputColumns = new[]
                 {
-                    "PAID_HRS", "PTO_HRS", "LOA_NO_HRS_PAID", "BASIC_SICK_HRS",
+                    "STD_HOURS", "PTO_HRS", "LOA_NO_HRS_PAID", "BASIC_SICK_HRS",
                     "BRIDGEPORT_SICK_HRS", "LM_PTO_HRS", "LM_SICK_HRS", "ATO_HRS",
                     "EXEMPT_HRS", "EXEC_NOTE", "PHYS_NOTE", "MANUAL_CHECK",
                     "ENTRY_DATE", "AUTH_BY", "CHECK_KRONOS"

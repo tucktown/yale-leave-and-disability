@@ -26,9 +26,17 @@ namespace ESLFeeder.Services
             // Define column mappings
             _columnMappings = new Dictionary<string, string>
             {
-                { "ACTUAL_END_DATE", "STD_APPROVED_THROUGH" },
-                { "GLCOMPANY", "GL_COMPANY" },
-                { "PTO_AVAIL", "PTO_AVAILABLE" }
+                // { "ACTUAL_END_DATE", "STD_APPROVED_THROUGH" }, // Removed: Source ACTUAL_END_DATE not in CSV, Target STD_APPROVED_THROUGH exists
+                // { "GLCOMPANY", "GL_COMPANY" }, // Removed: Source GLCOMPANY not in CSV
+                { "PROCESS_LEVEL", "GLCOMPANY" }, // Added: Map PROCESS_LEVEL value to GLCOMPANY column
+                { "PTO_AVAIL", "PTO_AVAILABLE" },
+                { "BASIC_SICK_AVAIL", "BASICSICK_AVAILABLE" },
+                { "PTO_HRS_LAST1WEEK", "PTO_HRS_LASTWEEK" }, // Added
+                { "PTO_HRS_LAST2WEEK", "PTO_HRS_LAST_TWOWEEK" }, // Added
+                { "BASIC_SICK_HRS_LAST1WEEK", "BASICSICK_LAST1WEEK" }, // Added
+                { "BASIC_SICK_HRS_LAST2WEEK", "BASICSICK_LAST2WEEK" }, // Added
+                { "CTPL_START", "CTPL_START_DATE" }, // Added
+                { "CTPL_END", "CTPL_END_DATE" }, // Added
                 // Add more mappings as needed
             };
 

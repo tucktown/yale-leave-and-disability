@@ -5,15 +5,20 @@ using System.Data;
 using ESLFeeder.Interfaces;
 using ESLFeeder.Models;
 using ESLFeeder.Models.Conditions;
+using Microsoft.Extensions.Logging;
 
 namespace ESLFeeder.Services
 {
     public class ConditionFactory : IConditionRegistry
     {
         private readonly Dictionary<string, ICondition> _conditions;
+        private readonly ILogger<ConditionFactory> _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public ConditionFactory()
+        public ConditionFactory(ILogger<ConditionFactory> logger, ILoggerFactory loggerFactory)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _conditions = new Dictionary<string, ICondition>
             {
                 { "C6", new C6() },    // STD is active
@@ -32,7 +37,10 @@ namespace ESLFeeder.Services
                 { "C19", new C19() },  // Calculates if usable PTO is greater than employee's weekly scheduled hours
                 { "C20", new C20() },  // Employee has a Basic Sick balance (calculated)
                 { "C21", new C21() },  // Basic Sick balance is greater than or equal to 40% of scheduled hours
-                { "C22", new C22() }   // Basic Sick balance is greater than or equal PTO Supplement Hours
+                { "C22", new C22() },  // Basic Sick Available
+                { "C23", new C23() },  // STD, CT PL, and FMLA all inactive
+                { "C24", new C24(_loggerFactory.CreateLogger<C24>()) },   // STD or CTPL starts or ends during pay week
+                { "C25", new C25() }   // CTPL Approved Indicator and CTPL Denied Indicator are both 'Y'
             };
         }
 

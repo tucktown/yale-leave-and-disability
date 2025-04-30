@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\ESLFeeder.csproj": {}
+    "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFeeder\\ESLFeeder.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\ESLFeeder.csproj": {
+    "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFeeder\\ESLFeeder.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\ESLFeeder.csproj",
+        "projectUniqueName": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFeeder\\ESLFeeder.csproj",
         "projectName": "ESLFeeder",
-        "projectPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\ESLFeeder.csproj",
+        "projectPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFeeder\\ESLFeeder.csproj",
         "packagesPath": "C:\\Users\\tucke\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFEEDER\\obj\\",
+        "outputPath": "C:\\Users\\tucke\\OneDrive\\Rotera\\Yale New Haven Health System\\Leave and Disability Payments\\CursorRef\\yale-leave-and-disability\\ESLFeeder\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tucke\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net5.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net5.0": {
+            "targetAlias": "net5.0",
             "projectReferences": {}
           }
         },
@@ -32,27 +32,41 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net5.0": {
+          "targetAlias": "net5.0",
           "dependencies": {
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[5.0.0, )"
             },
             "Microsoft.Extensions.Logging": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[5.0.0, )"
             },
             "Microsoft.Extensions.Logging.Console": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[5.0.0, )"
             },
-            "System.Data.Common": {
+            "System.Data.SqlClient": {
               "target": "Package",
-              "version": "[4.3.0, )"
+              "version": "[4.8.5, )"
             }
           },
           "imports": [
@@ -71,7 +85,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.410\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     }
