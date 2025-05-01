@@ -230,45 +230,49 @@ namespace ESLFeeder.Services
                 throw new InvalidOperationException($"Scenario name is required for scenario {scenario.Id}");
             }
 
-            // Validate process levels
-            if (scenario.ProcessLevels == null || !scenario.ProcessLevels.Any())
+            // Only validate process levels and reason code for non-skip scenarios
+            if (!scenario.IsSkipScenario)
             {
-                throw new InvalidOperationException($"At least one process level is required for scenario {scenario.Id}");
-            }
-
-            // Check that all process levels are valid
-            foreach (var processLevel in scenario.ProcessLevels)
-            {
-                if (processLevel <= 0)
+                // Validate process levels
+                if (scenario.ProcessLevels == null || !scenario.ProcessLevels.Any())
                 {
-                    throw new InvalidOperationException($"All process levels must be positive numbers for scenario {scenario.Id}");
+                    throw new InvalidOperationException($"At least one process level is required for non-skip scenario {scenario.Id}");
                 }
 
-                if (!_configData.Metadata.ValidProcessLevels.Contains(processLevel))
+                // Check that all process levels are valid
+                foreach (var processLevel in scenario.ProcessLevels)
                 {
-                    throw new InvalidOperationException($"Invalid process level {processLevel} for scenario {scenario.Id}");
+                    if (processLevel <= 0)
+                    {
+                        throw new InvalidOperationException($"All process levels must be positive numbers for scenario {scenario.Id}");
+                    }
+
+                    if (!_configData.Metadata.ValidProcessLevels.Contains(processLevel))
+                    {
+                        throw new InvalidOperationException($"Invalid process level {processLevel} for scenario {scenario.Id}");
+                    }
                 }
-            }
 
-            if (string.IsNullOrEmpty(scenario.ReasonCode))
-            {
-                throw new InvalidOperationException($"Reason code is required for scenario {scenario.Id}");
-            }
+                if (string.IsNullOrEmpty(scenario.ReasonCode))
+                {
+                    throw new InvalidOperationException($"Reason code is required for non-skip scenario {scenario.Id}");
+                }
 
-            // Case-insensitive comparison for reason codes
-            var normalizedReasonCode = scenario.ReasonCode.ToUpperInvariant();
-            var normalizedValidCodes = _configData.Metadata.ValidReasonCodes
-                .Select(code => code.ToUpperInvariant())
-                .ToList();
+                // Case-insensitive comparison for reason codes
+                var normalizedReasonCode = scenario.ReasonCode.ToUpperInvariant();
+                var normalizedValidCodes = _configData.Metadata.ValidReasonCodes
+                    .Select(code => code.ToUpperInvariant())
+                    .ToList();
 
-            _logger.LogInformation("Validating reason code '{ReasonCode}' (normalized: '{NormalizedReasonCode}') against valid codes: {ValidCodes}", 
-                scenario.ReasonCode, normalizedReasonCode, string.Join(", ", normalizedValidCodes));
+                _logger.LogInformation("Validating reason code '{ReasonCode}' (normalized: '{NormalizedReasonCode}') against valid codes: {ValidCodes}", 
+                    scenario.ReasonCode, normalizedReasonCode, string.Join(", ", normalizedValidCodes));
 
-            if (!normalizedValidCodes.Contains(normalizedReasonCode))
-            {
-                _logger.LogError("Invalid reason code {ReasonCode} (normalized: {NormalizedReasonCode}) for scenario {Id}. Valid codes are: {ValidCodes}", 
-                    scenario.ReasonCode, normalizedReasonCode, scenario.Id, string.Join(", ", normalizedValidCodes));
-                throw new InvalidOperationException($"Invalid reason code {scenario.ReasonCode} for scenario {scenario.Id}");
+                if (!normalizedValidCodes.Contains(normalizedReasonCode))
+                {
+                    _logger.LogError("Invalid reason code {ReasonCode} (normalized: {NormalizedReasonCode}) for scenario {Id}. Valid codes are: {ValidCodes}", 
+                        scenario.ReasonCode, normalizedReasonCode, scenario.Id, string.Join(", ", normalizedValidCodes));
+                    throw new InvalidOperationException($"Invalid reason code {scenario.ReasonCode} for scenario {scenario.Id}");
+                }
             }
         }
     }

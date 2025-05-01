@@ -6019,6 +6019,7 @@
       "id": 101,
       "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (MEDICAL/SURGICAL)",
       "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6044,6 +6045,7 @@
       "id": 102,
       "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (PREGNANCY)",
       "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6069,6 +6071,7 @@
       "id": 103,
       "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (BONDING)",
       "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6094,6 +6097,7 @@
       "id": 104,
       "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (MEDICAL/SURGICAL)",
       "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6119,6 +6123,7 @@
       "id": 105,
       "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (PREGNANCY)",
       "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6144,6 +6149,7 @@
       "id": 106,
       "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (BONDING)",
       "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6169,6 +6175,7 @@
       "id": 107,
       "name": "500/900: SKIP - MEDICAL/SURGICAL - STD, CT PL, and FMLA are not approved",
       "description": "500/900: SKIP - MEDICAL/SURGICAL - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6192,6 +6199,7 @@
       "id": 108,
       "name": "500/900: SKIP - PREGNANCY - STD, CT PL, and FMLA are not approved",
       "description": "500/900: SKIP - PREGNANCY - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6215,6 +6223,7 @@
       "id": 109,
       "name": "500/900: SKIP - BONDING - STD, CT PL, and FMLA are not approved",
       "description": "500/900: SKIP - BONDING - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "is_skip_scenario": true,
       "process_levels": [
         500,
         900
@@ -6349,6 +6358,63 @@
         "ScheduledHours",
         "PtoUsable"
        ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 110,
+      "name": "SKIP - Begin Date after Pay Start Date",
+      "description": "Leave Begin Date is after the start of the current pay week. Skip additional logic.",
+      "is_skip_scenario": true,
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": ["C26"]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 111,
+      "name": "SKIP - Employee Returned to Work",
+      "description": "Employee has a RTW Full Time date before the start of or during the pay period",
+      "is_skip_scenario": true,
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": ["C27"]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 112,
+      "name": "SKIP - Per Diem Employee",
+      "description": "Employee is per diem and not paid by HRConnect for Leave and Disability",
+      "is_skip_scenario": true,
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": ["C28"]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
       "logging": {
         "add_message": "",
         "update_message": ""
