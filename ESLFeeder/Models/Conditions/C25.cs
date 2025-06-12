@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C25 : ICondition
     {
+        public C25() { }
         public string Name => "C25";
         public string Description => "CTPL Approved Indicator and CTPL Denied Indicator are both 'Y'";
 

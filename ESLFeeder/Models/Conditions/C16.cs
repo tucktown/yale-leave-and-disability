@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C16 : ICondition
     {
+        public C16() { }
         public string Name => "C16";
         public string Description => "FMLA is approved and active";
 

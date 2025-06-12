@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C23 : ICondition
     {
+        public C23() { }
         public string Name => "C23";
         public string Description => "STD, CTPL, and FMLA all inactive";
 

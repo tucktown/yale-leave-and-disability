@@ -95,6 +95,12 @@ namespace ESLFeeder.Models
         public bool IsActive { get; set; } = true;
         
         /// <summary>
+        /// Indicates if this scenario should be skipped
+        /// </summary>
+        [JsonPropertyName("is_skip_scenario")]
+        public bool IsSkipScenario { get; set; } = false;
+        
+        /// <summary>
         /// Gets all required conditions for backward compatibility
         /// </summary>
         [JsonIgnore]

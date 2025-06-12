@@ -6017,13 +6017,9 @@
     },
     {
       "id": 101,
-      "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (MEDICAL/SURGICAL)",
+      "name": "SKIP - STD, CT PL, and FLMA are all inactive",
       "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "MEDICAL/SURGICAL",
+      "is_skip_scenario": true,
       "variables_required": [],
       "conditions": {
         "forbidden": [],
@@ -6042,18 +6038,14 @@
     },
     {
       "id": 102,
-      "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (PREGNANCY)",
-      "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "PREGNANCY",
+      "name": "SKIP - STD or CTPL starts or ends during pay week (Partial week)",
+      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
+      "is_skip_scenario": true,
       "variables_required": [],
       "conditions": {
         "forbidden": [],
         "required": [
-          "C23"
+          "C24"
         ]
       },
       "updates": {
@@ -6067,159 +6059,9 @@
     },
     {
       "id": 103,
-      "name": "500/900: SKIP - STD, CT PL, and FLMA are all inactive (BONDING)",
-      "description": "Scenario to identify cases that should be skipped by automation when STD, CT PL, and FMLA are all inactive.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "BONDING",
-      "variables_required": [],
-      "conditions": {
-        "forbidden": [],
-        "required": [
-          "C23"
-        ]
-      },
-      "updates": {
-        "order": [],
-        "fields": {}
-      },
-      "logging": {
-        "add_message": "",
-        "update_message": ""
-      }
-    },
-    {
-      "id": 104,
-      "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (MEDICAL/SURGICAL)",
-      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "MEDICAL/SURGICAL",
-      "variables_required": [],
-      "conditions": {
-        "forbidden": [],
-        "required": [
-          "C24"
-        ]
-      },
-      "updates": {
-        "order": [],
-        "fields": {}
-      },
-      "logging": {
-        "add_message": "",
-        "update_message": ""
-      }
-    },
-    {
-      "id": 105,
-      "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (PREGNANCY)",
-      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "PREGNANCY",
-      "variables_required": [],
-      "conditions": {
-        "forbidden": [],
-        "required": [
-          "C24"
-        ]
-      },
-      "updates": {
-        "order": [],
-        "fields": {}
-      },
-      "logging": {
-        "add_message": "",
-        "update_message": ""
-      }
-    },
-    {
-      "id": 106,
-      "name": "500/900: SKIP - STD or CTPL starts or ends during pay week (Partial week) (BONDING)",
-      "description": "Scenario to identify cases that should be skipped by automation when STD or CTPL starts or ends during the pay week.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "BONDING",
-      "variables_required": [],
-      "conditions": {
-        "forbidden": [],
-        "required": [
-          "C24"
-        ]
-      },
-      "updates": {
-        "order": [],
-        "fields": {}
-      },
-      "logging": {
-        "add_message": "",
-        "update_message": ""
-      }
-    },
-    {
-      "id": 107,
-      "name": "500/900: SKIP - MEDICAL/SURGICAL - STD, CT PL, and FMLA are not approved",
-      "description": "500/900: SKIP - MEDICAL/SURGICAL - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "MEDICAL/SURGICAL",
-      "conditions": {
-        "forbidden": [
-          "C6",
-          "C9",
-          "C10",
-          "C16"
-        ],
-        "required": [
-          "C18"
-        ]
-      },
-      "updates": {},
-      "logging": {}
-    },
-    {
-      "id": 108,
-      "name": "500/900: SKIP - PREGNANCY - STD, CT PL, and FMLA are not approved",
-      "description": "500/900: SKIP - PREGNANCY - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "PREGNANCY",
-      "conditions": {
-        "forbidden": [
-          "C6",
-          "C9",
-          "C10",
-          "C16"
-        ],
-        "required": [
-          "C18"
-        ]
-      },
-      "updates": {},
-      "logging": {}
-    },
-    {
-      "id": 109,
-      "name": "500/900: SKIP - BONDING - STD, CT PL, and FMLA are not approved",
-      "description": "500/900: SKIP - BONDING - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
-      "process_levels": [
-        500,
-        900
-      ],
-      "reason_code": "BONDING",
+      "name": "SKIP - STD, CT PL, and FMLA are not approved",
+      "description": "SKIP - STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect.",
+      "is_skip_scenario": true,
       "conditions": {
         "forbidden": [
           "C6",
@@ -6245,14 +6087,14 @@
       ],
       "conditions": {
         "forbidden": [
+          "C13",
           "C18",
           "C20"
         ],
         "required": [
           "C6",
           "C11",
-          "C12",
-          "C13"
+          "C12"
         ]
       },
       "updates": {
@@ -6349,6 +6191,63 @@
         "ScheduledHours",
         "PtoUsable"
        ],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 104,
+      "name": "SKIP - Begin Date after Pay Start Date",
+      "description": "Leave Begin Date is after the start of the current pay week. Skip additional logic.",
+      "is_skip_scenario": true,
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": ["C26"]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 105,
+      "name": "SKIP - Employee Returned to Work",
+      "description": "Employee has a RTW Full Time date before the start of or during the pay period",
+      "is_skip_scenario": true,
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": ["C27"]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 106,
+      "name": "SKIP - Per Diem Employee",
+      "description": "Employee is per diem and not paid by HRConnect for Leave and Disability",
+      "is_skip_scenario": true,
+      "variables_required": [],
+      "conditions": {
+        "forbidden": [],
+        "required": ["C28"]
+      },
+      "updates": {
+        "order": [],
+        "fields": {}
+      },
       "logging": {
         "add_message": "",
         "update_message": ""

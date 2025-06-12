@@ -7,6 +7,7 @@ using ESLFeeder.Services;
 using ESLFeeder.Interfaces;
 using ESLFeeder.Models;
 using System.Linq;
+using ESLFeeder.Models.Conditions;
 
 namespace ESLFeeder
 {
@@ -242,6 +243,29 @@ namespace ESLFeeder
             services.AddScoped<IConditionRegistry, ConditionFactory>();
             services.AddScoped<IScenarioCalculator, ScenarioCalculator>();
             services.AddSingleton<IConditionEvaluator, ConditionEvaluator>();
+            services.AddSingleton<ICondition, C6>();
+            services.AddSingleton<ICondition, C7>();
+            services.AddSingleton<ICondition, C8>();
+            services.AddSingleton<ICondition, C9>();
+            services.AddSingleton<ICondition, C10>();
+            services.AddSingleton<ICondition, C11>();
+            services.AddSingleton<ICondition, C12>();
+            services.AddSingleton<ICondition, C13>();
+            services.AddSingleton<ICondition, C14>();
+            services.AddSingleton<ICondition, C15>();
+            services.AddSingleton<ICondition, C16>();
+            services.AddSingleton<ICondition, C17>();
+            services.AddSingleton<ICondition, C18>();
+            services.AddSingleton<ICondition, C19>();
+            services.AddSingleton<ICondition, C20>();
+            services.AddSingleton<ICondition, C21>();
+            services.AddSingleton<ICondition, C22>();
+            services.AddSingleton<ICondition, C23>();
+            services.AddSingleton<ICondition, C24>();
+            services.AddSingleton<ICondition, C25>();
+            services.AddSingleton<ICondition, C26>();
+            services.AddSingleton<ICondition, C27>();
+            services.AddSingleton<ICondition, C28>();
         }
     }
 } 

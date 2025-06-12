@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C18 : ICondition
     {
+        public C18() { }
         public string Name => "C18";
         public string Description => "STD, CT PL, and FMLA are not approved. Cases need to be reviewed by HRConnect";
 

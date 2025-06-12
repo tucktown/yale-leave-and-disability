@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C8 : ICondition
     {
+        public C8() { }
         public string Name => "C8";
         public string Description => "Determines if STD hours can be applied according to actual or estimated CT PL payments. If > 0, then STD can be applied.";
 

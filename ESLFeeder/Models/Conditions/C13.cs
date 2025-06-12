@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C13 : ICondition
     {
+        public C13() { }
         public string Name => "C13";
         public string Description => "40% of PTO hours are less than or equal to usable PTO balance. PTO can be used to supplement leave.";
 

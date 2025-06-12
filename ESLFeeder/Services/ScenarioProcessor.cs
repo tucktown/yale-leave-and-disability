@@ -362,22 +362,8 @@ namespace ESLFeeder.Services
                     _logger.LogWarning("Process level or GL Company not found in row data");
                     return Enumerable.Empty<LeaveScenario>();
                 }
-                
-                // Get all scenarios from the configuration
-                var allScenarios = _scenarioConfiguration.GetScenarios();
-                
-                // Filter to relevant scenarios
-                var scenarios = allScenarios
-                    .Where(s => s.ReasonCode.Trim().Equals(reasonCode, StringComparison.OrdinalIgnoreCase) && 
-                                s.SupportsProcessLevel(processLevelInt) &&
-                                s.IsActive)
-                    .OrderBy(s => s.Id)
-                    .ToList();
-                
-                _logger.LogInformation("Found {Count} scenarios for reason code {ReasonCode} and process level {ProcessLevel}",
-                    scenarios.Count, reasonCode, processLevelInt);
-                
-                return scenarios;
+
+                return _scenarioConfiguration.GetScenariosForReasonCode(reasonCode, processLevelInt);
             }
             catch (Exception ex)
             {
@@ -655,21 +641,7 @@ namespace ESLFeeder.Services
                     return Enumerable.Empty<LeaveScenario>();
                 }
                 
-                // Get all scenarios from the configuration
-                var allScenarios = _scenarioConfiguration.GetScenarios();
-                
-                // Filter to relevant scenarios
-                var scenarios = allScenarios
-                    .Where(s => s.ReasonCode.Trim().Equals(reasonCode, StringComparison.OrdinalIgnoreCase) && 
-                                s.SupportsProcessLevel(processLevelInt) &&
-                                s.IsActive)
-                    .OrderBy(s => s.Id)
-                    .ToList();
-                
-                _logger.LogInformation("Found {Count} scenarios for reason code {ReasonCode} and process level {ProcessLevel}",
-                    scenarios.Count, reasonCode, processLevelInt);
-                
-                return scenarios;
+                return _scenarioConfiguration.GetScenariosForReasonCode(reasonCode, processLevelInt);
             }
             catch (Exception ex)
             {

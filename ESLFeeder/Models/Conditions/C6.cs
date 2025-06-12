@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C6 : ICondition
     {
+        public C6() { }
         public string Name => "C6";
         public string Description => "STD is active";
 

@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C14 : ICondition
     {
+        public C14() { }
         public string Name => "C14";
         public string Description => "PTO hours that are usable in combination with CT PL. If greater than 0, PTO will be used. If not, no PTO will be used.";
 

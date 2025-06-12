@@ -7,7 +7,8 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C27 : ICondition
     {
-        public string Name => "Employee returned to work before or during pay week";
+        public C27() { }
+        public string Name => "C27";
         public string Description => "Checks if the employee's return to work date is before or during the current pay week";
 
         public bool Evaluate(DataRow row, LeaveVariables variables)

@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C7 : ICondition
     {
+        public C7() { }
         public string Name => "C7";
         public string Description => "STD is not approved or has expired";
 

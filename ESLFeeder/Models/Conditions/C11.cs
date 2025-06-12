@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C11 : ICondition
     {
+        public C11() { }
         public string Name => "C11";
         public string Description => "CT PL not submitted, has expired, or in not active yet";
 

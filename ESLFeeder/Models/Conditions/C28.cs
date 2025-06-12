@@ -7,7 +7,8 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C28 : ICondition
     {
-        public string Name => "Employee is per diem";
+        public C28() { }
+        public string Name => "C28";
         public string Description => "Checks if the employee is per diem based on scheduled hours being less than 1";
 
         public bool Evaluate(DataRow row, LeaveVariables variables)
