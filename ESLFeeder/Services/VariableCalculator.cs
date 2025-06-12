@@ -124,6 +124,27 @@ namespace ESLFeeder.Services
                 // Calculate additional variables
                 variables.WeeklyWage = variables.PayRate * variables.ScheduledHours;
                 
+                // CTPL calculations - ADDED FOR CONSISTENCY
+                variables.MinWage40 = MIN_WAGE * 40;
+                variables.NinetyFiveCTMin40 = variables.MinWage40 * 0.95;
+                variables.CtplCalcStar = (variables.WeeklyWage - variables.MinWage40) * 0.6;
+                variables.CtplCalc = variables.NinetyFiveCTMin40 + variables.CtplCalcStar;
+
+                // CTPL Payment
+                if (!string.IsNullOrEmpty(variables.CtplApprovedAmount))
+                {
+                    variables.CtplPayment = Convert.ToDouble(variables.CtplApprovedAmount);
+                }
+                else if (variables.CtplCalc < MAX_CTPL_PAY)
+                {
+                    variables.CtplPayment = variables.CtplCalc;
+                }
+                else
+                {
+                    variables.CtplPayment = MAX_CTPL_PAY;
+                }
+                variables.CTPLApprovedAmount = variables.CtplPayment;
+
                 // Calculate PtoSuppDollars and PtoSuppHrs early to break dependency
                 bool isStdInactiveForDict = string.IsNullOrEmpty(variables.StdApprovedThrough) || 
                                             variables.PayStartDate > DateTime.Parse(variables.StdApprovedThrough);
@@ -222,9 +243,18 @@ namespace ESLFeeder.Services
                 Console.WriteLine($"CTPL Calc: {variables.CtplCalc}");
 
                 // CTPL Payment
-                variables.CtplPayment = string.IsNullOrEmpty(variables.CtplApprovedAmount) 
-                    ? MAX_CTPL_PAY 
-                    : Convert.ToDouble(variables.CtplApprovedAmount);
+                if (!string.IsNullOrEmpty(variables.CtplApprovedAmount))
+                {
+                    variables.CtplPayment = Convert.ToDouble(variables.CtplApprovedAmount);
+                }
+                else if (variables.CtplCalc < MAX_CTPL_PAY)
+                {
+                    variables.CtplPayment = variables.CtplCalc;
+                }
+                else
+                {
+                    variables.CtplPayment = MAX_CTPL_PAY;
+                }
                 variables.CTPLApprovedAmount = variables.CtplPayment;
                 Console.WriteLine($"CTPL Payment: {variables.CtplPayment}");
 
@@ -259,25 +289,14 @@ namespace ESLFeeder.Services
 
         private void CalculatePtoAvailability(LeaveVariables variables)
         {
-            // Calculate PTO supplement dollars (PTO_SUPP_DOLLARS) - MOVED TO CalculateVariables
-            // bool isStdInactive = string.IsNullOrEmpty(variables.StdApprovedThrough) || 
-            //                     variables.PayStartDate > DateTime.Parse(variables.StdApprovedThrough);
-            
-            // variables.PtoSuppDollars = isStdInactive
-            //     ? variables.WeeklyWage - variables.CtplPayment
-            //     : variables.WeeklyWage - variables.CtplPayment - variables.StdOrNot;
-
-            // Calculate PTO supplement hours (PTO_SUPP_HRS) - MOVED TO CalculateVariables
-            // variables.PtoSuppHrs = variables.PtoSuppDollars / variables.PayRate;
-
             // Calculate PTO reserve based on EE_PTO_RTW (PTO_RESERVE)
-            if (variables.EePtoRtw?.Equals("Y", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                variables.PtoReserve = variables.ScheduledHours * 2;
-            }
-            else // Handles N, null, or empty string
+            if (variables.EePtoRtw?.Equals("N", StringComparison.OrdinalIgnoreCase) == true)
             {
                 variables.PtoReserve = 0;
+            }
+            else // Handles Y, null, or empty string, or any value other than N
+            {
+                variables.PtoReserve = variables.ScheduledHours * 2;
             }
             
             // Calculate PTO availability based on WEEK_OF_PP (PTO_AVAIL_CALC)
@@ -291,9 +310,18 @@ namespace ESLFeeder.Services
                 : 0;
             
             // Calculate PTO use hours based on PTO_USABLE and PTO_SUPP_HRS (PTO_USE_HRS)
-            variables.PtoUseHrs = (variables.PtoUsable - variables.PtoSuppHrs > 0 && variables.PtoSuppHrs > 0)
-                ? variables.PtoSuppHrs
-                : 0;
+            if ((variables.PtoUsable - variables.PtoSuppHrs) > 0)
+            {
+                variables.PtoUseHrs = variables.PtoSuppHrs;
+            }
+            else if (variables.PtoSuppHrs > 0)
+            {
+                variables.PtoUseHrs = variables.PtoUsable;
+            }
+            else
+            {
+                variables.PtoUseHrs = 0;
+            }
 
             // Calculate PTO Basic Sick STD
             double fortyPercentOfScheduledHours = variables.ScheduledHours * 0.4;
