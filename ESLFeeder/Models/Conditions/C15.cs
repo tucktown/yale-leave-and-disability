@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C15 : ICondition
     {
+        public C15() { }
         public string Name => "C15";
         public string Description => "Calculates employee's available PTO vs. how much they want to keep for Return to Word. If PTO_USABLE is greater than 0, PTO can be applied to supplement leave.";
 

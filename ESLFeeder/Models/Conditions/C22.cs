@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C22 : ICondition
     {
+        public C22() { }
         public string Name => "C22";
         public string Description => "Basic Sick balance is greater than or equal PTO Supplement Hours";
 

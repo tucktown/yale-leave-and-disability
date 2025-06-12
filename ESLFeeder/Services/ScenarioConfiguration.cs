@@ -66,21 +66,50 @@ namespace ESLFeeder.Services
         {
             if (string.IsNullOrEmpty(reasonCode))
             {
+                _logger.LogWarning("Reason code is null or empty. No scenarios will be returned.");
                 return new List<LeaveScenario>();
             }
+            
+            _logger.LogInformation("Searching for scenarios with ReasonCode: {ReasonCode} and ProcessLevel: {ProcessLevel}", reasonCode, processLevel);
 
-            var scenarios = Scenarios
-                .Where(s => 
-                    s.ReasonCode.Trim().Equals(reasonCode.Trim(), StringComparison.OrdinalIgnoreCase) && 
-                    s.SupportsProcessLevel(processLevel) &&
-                    s.IsActive)
+            var skipScenarios = Scenarios
+                .Where(s => s.IsActive && s.IsSkipScenario)
                 .OrderBy(s => s.Id)
                 .ToList();
 
-            _logger.LogInformation("Found {Count} scenarios for reason code {ReasonCode} and process level {ProcessLevel}",
-                scenarios.Count, reasonCode, processLevel);
+            if (skipScenarios.Any())
+            {
+                _logger.LogInformation("Found {Count} active skip scenarios.", skipScenarios.Count);
+            }
 
-            return scenarios;
+            var regularScenarios = Scenarios
+                .Where(s => s.IsActive &&
+                            !s.IsSkipScenario &&
+                            s.ReasonCode.Trim().Equals(reasonCode.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                            s.SupportsProcessLevel(processLevel))
+                .OrderBy(s => s.Id)
+                .ToList();
+            
+            if (regularScenarios.Any())
+            {
+                _logger.LogInformation("Found {Count} active regular scenarios for ReasonCode '{ReasonCode}' and ProcessLevel '{ProcessLevel}'.", 
+                    regularScenarios.Count, reasonCode, processLevel);
+            }
+
+            var allScenarios = skipScenarios.Concat(regularScenarios).ToList();
+
+            if (!allScenarios.Any())
+            {
+                _logger.LogWarning("No active scenarios found for ReasonCode '{ReasonCode}' and ProcessLevel '{ProcessLevel}'.", 
+                    reasonCode, processLevel);
+            }
+            else
+            {
+                _logger.LogInformation("Total scenarios returned: {Count}. Skip scenarios: {SkipCount}, Regular scenarios: {RegularCount}.", 
+                    allScenarios.Count, skipScenarios.Count, regularScenarios.Count);
+            }
+
+            return allScenarios;
         }
 
         public void ReloadConfigurations()

@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C10 : ICondition
     {
+        public C10() { }
         public string Name => "C10";
         public string Description => "CT PL is active in current week (End)";
 

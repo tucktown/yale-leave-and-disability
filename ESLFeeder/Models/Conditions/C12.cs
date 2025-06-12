@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C12 : ICondition
     {
+        public C12() { }
         public string Name => "C12";
         public string Description => "Employee indicated they would like to supplement leave with PTO";
 

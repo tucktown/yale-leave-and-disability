@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C17 : ICondition
     {
+        public C17() { }
         public string Name => "C17";
         public string Description => "FMLA and CT PL are inactive or expired";
 

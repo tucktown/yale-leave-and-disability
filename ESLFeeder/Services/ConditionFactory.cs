@@ -13,35 +13,12 @@ namespace ESLFeeder.Services
     {
         private readonly Dictionary<string, ICondition> _conditions;
         private readonly ILogger<ConditionFactory> _logger;
-        private readonly ILoggerFactory _loggerFactory;
 
-        public ConditionFactory(ILogger<ConditionFactory> logger, ILoggerFactory loggerFactory)
+        public ConditionFactory(IEnumerable<ICondition> conditions, ILogger<ConditionFactory> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            _conditions = new Dictionary<string, ICondition>
-            {
-                { "C6", new C6() },    // STD is active
-                { "C7", new C7() },    // STD is not approved or has expired
-                { "C8", new C8() },    // Determines if STD hours can be applied
-                { "C9", new C9() },    // CT PL is active in current week (Start)
-                { "C10", new C10() },  // CT PL is active in current week (End)
-                { "C11", new C11() },  // CT PL not submitted or has expired
-                { "C12", new C12() },  // Employee indicated they would like to supplement leave with PTO
-                { "C13", new C13() },  // 40% of PTO hours are less than or equal to usable PTO balance
-                { "C14", new C14() },  // PTO hours that are usable in combination with CT PL
-                { "C15", new C15() },  // Calculates employee's available PTO vs. how much they want to keep for Return to Work
-                { "C16", new C16() },  // FMLA is approved and active
-                { "C17", new C17() },  // FMLA and CT PL are inactive or expired
-                { "C18", new C18() },  // STD, CT PL, and FMLA are not approved
-                { "C19", new C19() },  // Calculates if usable PTO is greater than employee's weekly scheduled hours
-                { "C20", new C20() },  // Employee has a Basic Sick balance (calculated)
-                { "C21", new C21() },  // Basic Sick balance is greater than or equal to 40% of scheduled hours
-                { "C22", new C22() },  // Basic Sick Available
-                { "C23", new C23() },  // STD, CT PL, and FMLA all inactive
-                { "C24", new C24(_loggerFactory.CreateLogger<C24>()) },   // STD or CTPL starts or ends during pay week
-                { "C25", new C25() }   // CTPL Approved Indicator and CTPL Denied Indicator are both 'Y'
-            };
+            _conditions = conditions.ToDictionary(c => c.Name, c => c);
+            _logger.LogInformation("Loaded {Count} conditions", _conditions.Count);
         }
 
         public ICondition GetCondition(string id)

@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C21 : ICondition
     {
+        public C21() { }
         public string Name => "C21";
         public string Description => "Basic Sick balance is greater than or equal to 40% of scheduled hours";
 

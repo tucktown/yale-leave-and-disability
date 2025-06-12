@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C20 : ICondition
     {
+        public C20() { }
         public string Name => "C20";
         public string Description => "Employee has a Basic Sick balance (calculated)";
 

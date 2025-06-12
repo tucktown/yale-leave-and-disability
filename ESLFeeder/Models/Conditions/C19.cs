@@ -8,6 +8,7 @@ namespace ESLFeeder.Models.Conditions
 {
     public class C19 : ICondition
     {
+        public C19() { }
         public string Name => "C19";
         public string Description => "Calculates if usable PTO (current PTO balance - return to work reserve) is greater than employee's weekly scheduled hours.";
 
