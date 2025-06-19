@@ -388,6 +388,13 @@ namespace ESLFeeder.Services
         
         private double CalculateStdOrNot(LeaveVariables variables)
         {
+            // First check if STD is not approved or has expired
+            if (string.IsNullOrEmpty(variables.StdApprovedThrough) || 
+                variables.PayEndDate > DateTime.Parse(variables.StdApprovedThrough))
+            {
+                return 0;
+            }
+
             // Calculate STD or Not based on weekly wage and CTPL payment
             double stdAmount = variables.WeeklyWage * 0.6;
             return stdAmount > variables.CtplPayment ? (stdAmount - variables.CtplPayment) : 0;
