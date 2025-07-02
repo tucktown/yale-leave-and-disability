@@ -1008,10 +1008,13 @@
       ],
       "conditions": {
         "forbidden": [
-          "C18"
+          "C12",
+          "C18",
+          "C20"
         ],
         "required": [
-          "C7"
+          "C7",
+          "C11"
         ]
       },
       "updates": {
@@ -1098,6 +1101,226 @@
           }
         }
       },
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 10,
+      "name": "500/900: MEDICAL/SURGICAL - No STD, CT PL, No Basic Sick, With PTO Supplement",
+      "description": "If an employee is not STD eligible, CT PL is active, has no Basic Sick, and wants to supplement with PTO and are able to, PTO hours will be paid according to CT PL limits.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "MEDICAL/SURGICAL",
+      "is_skip_scenario": false,
+      "conditions": {
+        "forbidden": [
+          "C11",
+          "C18",
+          "C20"
+        ],
+        "required": [
+          "C7",
+          "C9",
+          "C10",
+          "C12",
+          "C14"
+        ]
+      },
+      "updates": {
+        "order": [
+          "PTO_HRS",
+          "LOA_NO_HRS_PAID",
+          "BASIC_SICK_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "LM_PTO_HRS",
+          "LM_SICK_HRS",
+          "ATO_HRS",
+          "EXEMPT_HRS",
+          "EXEC_NOTE",
+          "PHYS_NOTE",
+          "MANUAL_CHECK",
+          "ENTRY_DATE",
+          "AUTH_BY",
+          "CHECK_KRONOS"
+        ],
+        "fields": {
+          "PTO_HRS": {
+            "source": "PTO_USE_HOURS",
+            "type": "double"
+          },
+          "LOA_NO_HRS_PAID": {
+            "type": "double",
+            "source": "0"
+          },
+          "BASIC_SICK_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "LM_PTO_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "LM_SICK_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "ATO_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "EXEMPT_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "EXEC_NOTE": {
+            "type": "string",
+            "allow_null": true,
+            "source": "null"
+          },
+          "PHYS_NOTE": {
+            "type": "string",
+            "allow_null": true,
+            "source": "null"
+          },
+          "MANUAL_CHECK": {
+            "type": "string",
+            "allow_null": true,
+            "source": "null"
+          },
+          "ENTRY_DATE": {
+            "type": "date",
+            "source": "CURRENT_DATE"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "double"
+          },
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "double"
+          }
+        }
+      },
+      "variables_required": [],
+      "logging": {
+        "add_message": "",
+        "update_message": ""
+      }
+    },
+    {
+      "id": 11,
+      "name": "500/900: MEDICAL/SURGICAL - No STD, CT PL, With PTO Supplement (LAO)",
+      "description": "If an employee is not STD eligible, CT PL is active, has no Basic Sick, and wants to supplement with PTO but are not able to, all scheduled hours will be allocated to LOA No Hours Paid.",
+      "process_levels": [
+        500,
+        900
+      ],
+      "reason_code": "MEDICAL/SURGICAL",
+      "is_skip_scenario": false,
+      "conditions": {
+        "forbidden": [
+          "C11",
+          "C14",
+          "C18",
+          "C20"
+        ],
+        "required": [
+          "C7",
+          "C9",
+          "C10",
+          "C12"
+        ]
+      },
+      "updates": {
+        "order": [
+          "PTO_HRS",
+          "LOA_NO_HRS_PAID",
+          "BASIC_SICK_HRS",
+          "BRIDGEPORT_SICK_HRS",
+          "LM_PTO_HRS",
+          "LM_SICK_HRS",
+          "ATO_HRS",
+          "EXEMPT_HRS",
+          "EXEC_NOTE",
+          "PHYS_NOTE",
+          "MANUAL_CHECK",
+          "ENTRY_DATE",
+          "AUTH_BY",
+          "CHECK_KRONOS"
+        ],
+        "fields": {
+          "PTO_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "LOA_NO_HRS_PAID": {
+            "source": "variables.ScheduledHours",
+            "type": "double"
+          },
+          "BASIC_SICK_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "BRIDGEPORT_SICK_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "LM_PTO_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "LM_SICK_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "ATO_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "EXEMPT_HRS": {
+            "type": "double",
+            "source": "0"
+          },
+          "EXEC_NOTE": {
+            "type": "string",
+            "allow_null": true,
+            "source": "null"
+          },
+          "PHYS_NOTE": {
+            "type": "string",
+            "allow_null": true,
+            "source": "null"
+          },
+          "MANUAL_CHECK": {
+            "type": "string",
+            "allow_null": true,
+            "source": "null"
+          },
+          "ENTRY_DATE": {
+            "type": "date",
+            "source": "CURRENT_DATE"
+          },
+          "AUTH_BY": {
+            "source": "ESL",
+            "type": "double"
+          },
+          "CHECK_KRONOS": {
+            "source": "Y",
+            "type": "double"
+          }
+        }
+      },
+      "variables_required": [
+        "ScheduledHours"
+      ],
       "logging": {
         "add_message": "",
         "update_message": ""
@@ -2061,12 +2284,13 @@
         "ScheduledHours"
       ],
       "conditions": {
-        "forbidden": "C15",
+        "forbidden": [
+          "C15"
+        ],
         "required": [
           "C7",
           "C11",
-          "C16",
-          "C19"
+          "C16"
         ]
       },
       "updates": {
