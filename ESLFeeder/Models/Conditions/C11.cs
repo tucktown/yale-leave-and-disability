@@ -10,49 +10,94 @@ namespace ESLFeeder.Models.Conditions
     {
         public C11() { }
         public string Name => "C11";
-        public string Description => "CT PL not submitted, has expired, or in not active yet";
+        public string Description => "CT PL not submitted, has expired, or is denied without approved amount";
 
         public bool Evaluate(DataRow row, LeaveVariables variables)
         {
-            // Check if CTPL_FORM is null
-            if (row == null || row["CTPL_FORM"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_FORM"]?.ToString()))
-                return true;
-
-            // Check if required dates exist
-            if (row["CTPL_START_DATE"] == DBNull.Value || row["CTPL_END_DATE"] == DBNull.Value ||
-                row["PAY_START_DATE"] == DBNull.Value || row["PAY_END_DATE"] == DBNull.Value)
+            if (row == null)
                 return false;
 
-            var payStartDate = Convert.ToDateTime(row["PAY_START_DATE"]);
-            var payEndDate = Convert.ToDateTime(row["PAY_END_DATE"]);
-            var ctplStartDate = Convert.ToDateTime(row["CTPL_START_DATE"]);
-            var ctplEndDate = Convert.ToDateTime(row["CTPL_END_DATE"]);
+            // First condition: CTPL_FORM IS NULL
+            if (row["CTPL_FORM"] == DBNull.Value || string.IsNullOrEmpty(row["CTPL_FORM"]?.ToString()))
+                return true;
 
-            // Return true if any of the conditions are met
-            return payStartDate > ctplEndDate || payEndDate < ctplStartDate;
+            // Second condition: PAY_START_DATE > CTPL_END
+            if (row["PAY_START_DATE"] != DBNull.Value && !string.IsNullOrEmpty(row["PAY_START_DATE"]?.ToString()) &&
+                row["CTPL_END_DATE"] != DBNull.Value && !string.IsNullOrEmpty(row["CTPL_END_DATE"]?.ToString()))
+            {
+                var payStartDate = Convert.ToDateTime(row["PAY_START_DATE"]);
+                var ctplEndDate = Convert.ToDateTime(row["CTPL_END_DATE"]);
+                
+                if (payStartDate > ctplEndDate)
+                    return true;
+            }
+
+            // Third condition: AND(CTPL_FORM = Y, CTPL_DENIED_IND = Y, CTPL_APPROVED_AMOUNT IS NULL)
+            bool formIsY = false;
+            if (row["CTPL_FORM"] != DBNull.Value && !string.IsNullOrEmpty(row["CTPL_FORM"]?.ToString()))
+            {
+                formIsY = row["CTPL_FORM"].ToString().ToUpper() == "Y";
+            }
+
+            bool deniedIsY = false;
+            if (row["CTPL_DENIED_IND"] != DBNull.Value && !string.IsNullOrEmpty(row["CTPL_DENIED_IND"]?.ToString()))
+            {
+                deniedIsY = row["CTPL_DENIED_IND"].ToString().ToUpper() == "Y";
+            }
+
+            bool approvedAmountIsNull = (row["CTPL_APPROVED_AMOUNT"] == DBNull.Value || 
+                                        string.IsNullOrEmpty(row["CTPL_APPROVED_AMOUNT"]?.ToString()));
+
+            if (formIsY && deniedIsY && approvedAmountIsNull)
+                return true;
+
+            return false;
         }
         
         public bool Evaluate(Dictionary<string, object> data, LeaveVariables variables)
         {
-            // Check if CTPL_FORM is null
-            if (data == null || !data.ContainsKey("CTPL_FORM") || 
+            if (data == null)
+                return false;
+
+            // First condition: CTPL_FORM IS NULL
+            if (!data.ContainsKey("CTPL_FORM") || 
                 data["CTPL_FORM"] == null || string.IsNullOrEmpty(data["CTPL_FORM"]?.ToString()))
                 return true;
 
-            // Check if all required dates exist
-            if (!data.ContainsKey("CTPL_START_DATE") || !data.ContainsKey("CTPL_END_DATE") ||
-                !data.ContainsKey("PAY_START_DATE") || !data.ContainsKey("PAY_END_DATE") ||
-                data["CTPL_START_DATE"] == null || data["CTPL_END_DATE"] == null ||
-                data["PAY_START_DATE"] == null || data["PAY_END_DATE"] == null)
-                return false;
+            // Second condition: PAY_START_DATE > CTPL_END
+            if (data.ContainsKey("PAY_START_DATE") && data["PAY_START_DATE"] != null &&
+                data.ContainsKey("CTPL_END_DATE") && data["CTPL_END_DATE"] != null)
+            {
+                var payStartDate = Convert.ToDateTime(data["PAY_START_DATE"]);
+                var ctplEndDate = Convert.ToDateTime(data["CTPL_END_DATE"]);
+                
+                if (payStartDate > ctplEndDate)
+                    return true;
+            }
 
-            var payStartDate = Convert.ToDateTime(data["PAY_START_DATE"]);
-            var payEndDate = Convert.ToDateTime(data["PAY_END_DATE"]);
-            var ctplStartDate = Convert.ToDateTime(data["CTPL_START_DATE"]);
-            var ctplEndDate = Convert.ToDateTime(data["CTPL_END_DATE"]);
+            // Third condition: AND(CTPL_FORM = Y, CTPL_DENIED_IND = Y, CTPL_APPROVED_AMOUNT IS NULL)
+            bool formIsY = false;
+            if (data.ContainsKey("CTPL_FORM") && data["CTPL_FORM"] != null && 
+                !string.IsNullOrEmpty(data["CTPL_FORM"]?.ToString()))
+            {
+                formIsY = data["CTPL_FORM"].ToString().ToUpper() == "Y";
+            }
 
-            // Return true if any of the conditions are met
-            return payStartDate > ctplEndDate || payEndDate < ctplStartDate;
+            bool deniedIsY = false;
+            if (data.ContainsKey("CTPL_DENIED_IND") && data["CTPL_DENIED_IND"] != null && 
+                !string.IsNullOrEmpty(data["CTPL_DENIED_IND"]?.ToString()))
+            {
+                deniedIsY = data["CTPL_DENIED_IND"].ToString().ToUpper() == "Y";
+            }
+
+            bool approvedAmountIsNull = (!data.ContainsKey("CTPL_APPROVED_AMOUNT") || 
+                                        data["CTPL_APPROVED_AMOUNT"] == null || 
+                                        string.IsNullOrEmpty(data["CTPL_APPROVED_AMOUNT"]?.ToString()));
+
+            if (formIsY && deniedIsY && approvedAmountIsNull)
+                return true;
+
+            return false;
         }
     }
 }
