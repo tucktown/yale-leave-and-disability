@@ -524,7 +524,7 @@ def main():
             with open(file_path, 'w') as f:
                 json.dump(data, f, indent=2)
             print(f"Successfully updated {file_path}.")
-        else:
+            else:
             print("No skip scenarios needed updating.")
 
     except FileNotFoundError:

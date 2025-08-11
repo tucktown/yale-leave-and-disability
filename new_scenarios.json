@@ -1,0 +1,793 @@
+[
+  {
+    "id": 53,
+    "name": "500/900: BONDING - STD, No CT PL, No Basic Sick, No PTO Supplement",
+    "description": "If an employee is out for Bonding, in STD period, CT PL is not active, has no Basic Sick, and employee does not want to supplement with PTO, employee will be paid 60% of scheduled hours as STD.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C12",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C11"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 54,
+    "name": "500/900: BONDING - STD, CT PL, Basic Sick Available (Exhaust), No PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has either submitted or been approved for CT PL, has Basic Sick, and does not want to supplement with PTO. This will calculate how many hours of STD and Basic Sick will be paid weekly. If no STD hours will be paid, LAO No Hours Paid will be set to Scheduled Hours. If Basic Sick balance is not enough to cover full PTO support hours, remaining balance will be exhausted.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11",
+        "C12",
+        "C18",
+        "C22"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10",
+        "C20"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "(STD_OR_NOT / PAY_RATE)",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "BASIC_SICK_AVAIL_CALC",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 55,
+    "name": "500/900: BONDING - STD, CT PL, Basic Sick Available (Full), No PTO Supplement (No STD)",
+    "description": "Employee is out for pregnancy, in STD period, has either submitted or been approved for CT PL, has Basic Sick, and does not want to supplement with PTO. This will calculate how many hours of STD and Basic Sick will be paid weekly. If STD_OR_NOT <0, then only Basic Sick will be paid.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C8",
+        "C11",
+        "C12",
+        "C18"
+      ],
+      "required": [
+        "C6",
+        "C9",
+        "C10",
+        "C20",
+        "C22"
+      ]
+    },
+    "fields": {
+      "STD_HRS": 0,
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "PTO_SUPP_HRS",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 56,
+    "name": "500/900: BONDING - STD, CT PL, Basic Sick Available (Exhaust), No PTO Supplement (No STD)",
+    "description": "Employee is out for Bonding, in STD period, has either submitted or been approved for CT PL, has Basic Sick, and does not want to supplement with PTO. This will calculate how many hours of STD and Basic Sick will be paid weekly. If no STD hours will be paid, LAO No Hours Paid will be set to Scheduled Hours. If Basic Sick balance is not enough to cover full PTO support hours, remaining balance will be exhausted. If STD_OR_NOT <0, then only Basic Sick will be paid.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C8",
+        "C11",
+        "C12",
+        "C18",
+        "C22"
+      ],
+      "required": [
+        "C6",
+        "C9",
+        "C10",
+        "C20"
+      ]
+    },
+    "fields": {
+      "STD_HRS": 0,
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "BASIC_SICK_AVAIL_CALC",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 57,
+    "name": "500/900: BONDING - STD, CT PL, No Basic Sick, No PTO Supplement",
+    "description": "Is an employee is out for Bonding, in STD period, CT PL is active, has no Basic Sick, and does not want to supplement with PTO, employee will be paid allowed STD hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11",
+        "C12",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "(STD_OR_NOT / PAY_RATE)",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 58,
+    "name": "500/900: BONDING - STD, CT PL, No Basic Sick, No PTO Supplement (LOA)",
+    "description": "Is an employee is out for Bonding, in STD period, CT PL is active, does not have Basic Sick, does not want to supplement with PTO, and CT PL limits do not allow for STD hours, employee will have all scheduled hours applied to LOA No Hours Paid.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C8",
+        "C11",
+        "C12",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C9",
+        "C10"
+      ]
+    },
+    "fields": {
+      "STD_HRS": 0,
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": "SCHED_HRS",
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 59,
+    "name": "500/900: BONDIING - STD, CT PL, No Basic Sick, With PTO Supplement",
+    "description": "Is an employee is out for Bonding, in STD period, CT PL is active, has no Basic Sick, wants to supplement with PTO, and CT PL limits allow for STD hours, employee will be paid with STD hours and allowed PTO supplement hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10",
+        "C12",
+        "C14"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "(STD_OR_NOT / PAY_RATE)",
+      "PTO_HRS": "PTO_USE_HRS",
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 60,
+    "name": "500/900: BONDING - STD, CT PL, No Basic Sick, With PTO Supplement (PTO Only)",
+    "description": "Is an employee is out for Bonding, in STD period, CT PL is active, has no Basic Sick, wants to supplement with PTO, and CT PL limits do not allow for STD hours, employee will be paid with STD hours and allowed PTO supplement hours. (STD_OR_NOT <0)",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C8",
+        "C11",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C9",
+        "C10",
+        "C12",
+        "C14"
+      ]
+    },
+    "fields": {
+      "STD_HRS": 0,
+      "PTO_HRS": "PTO_USE_HRS",
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 61,
+    "name": "500/900: BONDING - STD, CT PL, No Basic Sick, With PTO Supplement (LOA)",
+    "description": "Is an employee is out for Bonding, in STD period, CT PL is active, has no Basic Sick, has no usable PTO, and CT PL limits do not allow for STD hours, employee will have scheduled hours allocated to LOA No Hours Paid.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C8",
+        "C11",
+        "C14",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C9",
+        "C10",
+        "C12"
+      ]
+    },
+    "fields": {
+      "STD_HRS": 0,
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": "SCHED_HRS",
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 62,
+    "name": "500/900: BONDING - STD, No CT PL, Basic Sick Available (Full), No PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has not applied for CT PL, and does not want to supplement with PTO. Employee will be paid 60% of scheduled hours as STD. If available, Basic Sick will be applied up to 40% of scheduled hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C12",
+        "C18"
+      ],
+      "required": [
+        "C6",
+        "C11",
+        "C20",
+        "C21"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "SCHED_HRS * 0.4",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 63,
+    "name": "500/900: BONDING - STD, No CT PL, Basic Sick Available (Exhaust), No PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has not applied for CT PL, and does not want to supplement with PTO. Employee will be paid 60% of scheduled hours as STD. If available, Basic Sick will be applied up to 40% of scheduled hours. This case covers pay weeks where Basic Sick is exhausted.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C12",
+        "C18",
+        "C21"
+      ],
+      "required": [
+        "C6",
+        "C11",
+        "C20"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "BASIC_SICK_AVAIL_CALC",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 64,
+    "name": "500/900: BONDING - STD, CT PL, Basic Sick Available (Full), No PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has either submitted or been approved for CT PL, has Basic Sick, and does not want to supplement with PTO. This will calculate how many hours of STD and Basic Sick will be paid weekly.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11",
+        "C12",
+        "C18"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10",
+        "C20",
+        "C22"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "(STD_OR_NOT / PAY_RATE)",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "PTO_SUPP_HRS",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 65,
+    "name": "500/900: BONDING - STD, CT PL, Basic Sick (Full), With PTO Supplement",
+    "description": "If an employee is out on Bonding leave, with STD,  no CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours equal to 60% of scheduled hours. The remaining 40% of hours will be supplemented with Basic Sick and PTO, exhausting Basic Sick before using PTO.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10",
+        "C12",
+        "C20",
+        "C22"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "(STD_OR_NOT / PAY_RATE)",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "PTO_SUPP_HRS",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 66,
+    "name": "500/900: BONDING - STD, CT PL, Basic Sick (Exhaust), With PTO Supplement",
+    "description": "If an employee is out on Bonding, with STD,  no CT PL, Basic Sick, and wants to supplement with PTO, then employee will be paid with STD hours equal to 60% of scheduled hours. The remaining 40% of hours will be supplemented with Basic Sick and PTO, exhausting Basic Sick before using PTO.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11",
+        "C22"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10",
+        "C12",
+        "C20"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "(STD_OR_NOT / PAY_RATE)",
+      "PTO_HRS": "PTO_BASIC_SICK_STD_CTPL",
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "BASIC_SICK_STD_CTPL",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 67,
+    "name": "500/900: BONDING - STD, CT PL, No Basic Sick, With PTO Supplement (LOA)",
+    "description": "Is an employee is out for Bonding, in STD period, CT PL is active, has no Basic Sick, wants to supplement with PTO, and CT PL limits allow for STD hours, employee will be paid with STD hours and allowed PTO supplement hours. If no STD is allowed, and no PTO hours remain, all hours will be paid to LOA.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C11",
+        "C14",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C8",
+        "C9",
+        "C10",
+        "C12"
+      ]
+    },
+    "fields": {
+      "STD_HRS": 0,
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": "SCHED_HRS",
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 68,
+    "name": "500/900: BONDING - STD, No CT PL, Basic Sick Available (Full), With PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has not applied for CT PL, has Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, Basic Sick will be applied up to 40% of scheduled hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C18"
+      ],
+      "required": [
+        "C6",
+        "C11",
+        "C12",
+        "C20",
+        "C21"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": 0,
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "SCHED_HRS * 0.4",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 69,
+    "name": "500/900: BONDING - STD, No CT PL, Basic Sick Available (Exhaust), With PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has not applied for CT PL, has Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, Basic Sick will be applied up to 40% of scheduled hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C18",
+        "C21"
+      ],
+      "required": [
+        "C6",
+        "C11",
+        "C12",
+        "C20"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": "PTO_BASIC_SICK_STD",
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": "BASIC_SICK_AVAIL_CALC",
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 70,
+    "name": "500/900: BONDING - STD, No CT PL, No Basic Sick Available, With PTO Supplement",
+    "description": "Employee is out for Bonding, in STD period, has not applied for CT PL, has no Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, PTO will be applied up to 40% of scheduled hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C11",
+        "C12",
+        "C13"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": "SCHED_HRS * 0.4",
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  },
+  {
+    "id": 71,
+    "name": "500/900: BONDING - STD, No CT PL, No Basic Sick Available, With PTO Supplement (Exhaust PTO)",
+    "description": "Employee is out for Bonding, in STD period, has not applied for CT PL, has no Basic Sick, and wants to supplement with PTO, employee will be paid 60% of scheduled hours as STD. If available, PTO will be applied up to 40% of scheduled hours.",
+    "process_levels": [
+      500,
+      900
+    ],
+    "reason_code": "BONDING",
+    "is_skip_scenario": false,
+    "conditions": {
+      "forbidden": [
+        "C13",
+        "C18",
+        "C20"
+      ],
+      "required": [
+        "C6",
+        "C11",
+        "C12"
+      ]
+    },
+    "fields": {
+      "STD_HRS": "SCHED_HRS * 0.6",
+      "PTO_HRS": "PTO_USABLE",
+      "LOA_NO_HRS_PAID": 0,
+      "BASIC_SICK_HRS": 0,
+      "BRIDGEPORT_SICK_HRS": 0,
+      "LM_PTO_HRS": 0,
+      "LM_SICK_HRS": 0,
+      "ATO_HRS": 0,
+      "EXEMPT_HRS": 0,
+      "EXEC_NOTE": null,
+      "PHYS_NOTE": null,
+      "MANUAL_CHECK": null,
+      "ENTRY_DATE": "CURRENT_DATE",
+      "AUTH_BY": "ESL",
+      "CHECK_KRONOS": "Y"
+    }
+  }
+]

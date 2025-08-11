@@ -69,7 +69,7 @@ namespace ESLFeeder.Services
                 _logger.LogWarning("Reason code is null or empty. No scenarios will be returned.");
                 return new List<LeaveScenario>();
             }
-            
+
             _logger.LogInformation("Searching for scenarios with ReasonCode: {ReasonCode} and ProcessLevel: {ProcessLevel}", reasonCode, processLevel);
 
             var skipScenarios = Scenarios
@@ -85,11 +85,11 @@ namespace ESLFeeder.Services
             var regularScenarios = Scenarios
                 .Where(s => s.IsActive &&
                             !s.IsSkipScenario &&
-                            s.ReasonCode.Trim().Equals(reasonCode.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                    s.ReasonCode.Trim().Equals(reasonCode.Trim(), StringComparison.OrdinalIgnoreCase) && 
                             s.SupportsProcessLevel(processLevel))
                 .OrderBy(s => s.Id)
                 .ToList();
-            
+
             if (regularScenarios.Any())
             {
                 _logger.LogInformation("Found {Count} active regular scenarios for ReasonCode '{ReasonCode}' and ProcessLevel '{ProcessLevel}'.", 
